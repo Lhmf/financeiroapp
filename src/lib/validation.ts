@@ -75,6 +75,11 @@ export const paymentMethodSchema = z.enum([
   "TRANSFER",
   "OTHER",
 ]);
+
+const optionalPaymentMethod = z.preprocess(
+  (value) => (value === "" || value == null ? undefined : value),
+  paymentMethodSchema.optional(),
+);
 export const accountTypeSchema = z.enum([
   "CHECKING",
   "SAVINGS",
@@ -140,7 +145,7 @@ export const expenseSchema = z
     dueDate: dateString,
     paidDate: optionalDateString,
     type: expenseTypeSchema,
-    paymentMethod: paymentMethodSchema.optional(),
+    paymentMethod: optionalPaymentMethod,
     financialAccountId: optionalId,
     status: expenseStatusSchema,
     installmentNumber: optionalPositiveInt,
@@ -219,7 +224,7 @@ export const debtPaymentSchema = z
     amount: money,
     paidAt: dateString,
     financialAccountId: optionalId,
-    paymentMethod: paymentMethodSchema.optional(),
+    paymentMethod: optionalPaymentMethod,
     createExpense: z.preprocess(
       (value) => value === "on" || value === "true" || value === true,
       z.boolean(),
