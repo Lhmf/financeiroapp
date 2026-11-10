@@ -137,6 +137,10 @@ Se o usuário excluir a despesa vinculada diretamente:
 
 Isso evita que o pagamento “desapareça” do caixa. O dinheiro saiu; a dívida foi reduzida; o registro de pagamento permanece.
 
+### Edição de despesa vinculada
+
+A edição direta da despesa vinculada é **bloqueada**. Alterar valor, data ou conta por ali dessincronizaria o pagamento e o saldo devedor. Para mudar esses dados, o usuário deve editar o pagamento na página da dívida. A lista de despesas mostra “Ver dívida” no lugar de “Editar” para esses registros.
+
 ### Exclusão de dívida
 
 Ao excluir uma dívida:

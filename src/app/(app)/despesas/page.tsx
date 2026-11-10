@@ -291,13 +291,23 @@ export default async function ExpensesPage({
                         </form>
                       ) : null}
 
-                      <Link
-                        href={`/despesas/${expense.id}/editar`}
-                        className="inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
-                      >
-                        <Pencil className="h-3.5 w-3.5" />
-                        Editar
-                      </Link>
+                      {expense.debtPayment ? (
+                        <Link
+                          href={`/dividas/${expense.debtPayment.debtId}`}
+                          className="inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium text-violet-600 transition hover:bg-violet-50 hover:text-violet-800"
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                          Ver dívida
+                        </Link>
+                      ) : (
+                        <Link
+                          href={`/despesas/${expense.id}/editar`}
+                          className="inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                          Editar
+                        </Link>
+                      )}
 
                       <form action={deleteExpense}>
                         <input type="hidden" name="id" value={expense.id} />

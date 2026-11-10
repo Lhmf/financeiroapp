@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
+import { Alert } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
+import { LinkButton } from "@/components/ui/link-button";
 import { PageHeader } from "@/components/ui/page-header";
 import { ExpenseForm } from "@/components/forms/expense-form";
 import { updateExpense } from "@/actions/expenses";
@@ -25,6 +27,32 @@ export default async function EditExpensePage({
   ]);
 
   if (!expense) notFound();
+
+  if (expense.debtPayment) {
+    return (
+      <div className="mx-auto max-w-3xl animate-fade-up space-y-6">
+        <PageHeader
+          title="Despesa vinculada a uma dívida"
+          description="Esta saída foi criada automaticamente por um pagamento de dívida."
+        />
+        <Alert tone="info">
+          A despesa <strong>{expense.description}</strong> está vinculada ao
+          pagamento da dívida{" "}
+          <strong>{expense.debtPayment.debt.name}</strong>. Para alterar valor,
+          data ou conta, edite o pagamento na página da dívida. Assim o saldo
+          devedor e o fluxo de caixa permanecem consistentes.
+        </Alert>
+        <div className="flex flex-wrap gap-2">
+          <LinkButton href={`/dividas/${expense.debtPayment.debtId}`}>
+            Ver dívida
+          </LinkButton>
+          <LinkButton href="/despesas" variant="outline">
+            Voltar para despesas
+          </LinkButton>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-3xl animate-fade-up space-y-6">

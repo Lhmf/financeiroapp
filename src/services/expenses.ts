@@ -63,6 +63,13 @@ export async function getExpense(userId: string, id: string) {
     include: {
       category: true,
       financialAccount: true,
+      debtPayment: {
+        select: {
+          id: true,
+          debtId: true,
+          debt: { select: { name: true } },
+        },
+      },
     },
   });
 }

@@ -84,9 +84,17 @@ export async function updateExpense(
 
   const existing = await prisma.expense.findFirst({
     where: { id, userId: user.id },
+    include: { debtPayment: { select: { id: true, debtId: true } } },
   });
 
   if (!existing) return { error: "Despesa não encontrada." };
+
+  if (existing.debtPayment) {
+    return {
+      error:
+        "Esta despesa foi gerada por um pagamento de dívida. Edite o pagamento na página da dívida para manter o saldo consistente.",
+    };
+  }
 
   const parsed = expenseSchema.safeParse(formValues(formData));
   if (!parsed.success) return validationError(parsed.error);
