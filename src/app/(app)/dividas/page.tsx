@@ -35,14 +35,22 @@ export default async function DebtsPage() {
       />
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <Card className="p-5">
-          <p className="text-xs font-medium text-slate-500">Total devedor</p>
-          <p className="tabular mt-2 text-2xl font-semibold text-violet-700">
-            {formatCents(totalDebt)}
-          </p>
-          <p className="mt-1 text-[11px] text-slate-400">
-            Somente dívidas ativas
-          </p>
+        <Card className="relative overflow-hidden border-violet-500/20 bg-gradient-to-br from-violet-600 via-violet-600 to-fuchsia-700 p-5 text-white shadow-lg shadow-violet-900/10">
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -right-8 -top-10 h-32 w-32 rounded-full bg-white/10 blur-2xl"
+          />
+          <div className="relative">
+            <p className="text-xs font-medium text-violet-50/80">
+              Total devedor
+            </p>
+            <p className="tabular mt-2 text-2xl font-semibold text-white">
+              {formatCents(totalDebt)}
+            </p>
+            <p className="mt-1 text-[11px] text-violet-50/60">
+              Somente dívidas ativas
+            </p>
+          </div>
         </Card>
         <Card className="p-5">
           <p className="text-xs font-medium text-slate-500">Dívidas ativas</p>
@@ -89,7 +97,10 @@ export default async function DebtsPage() {
               </h2>
               <div className="grid gap-4 md:grid-cols-2">
                 {active.map((debt) => (
-                  <Card key={debt.id} className="p-5">
+                  <Card
+                    key={debt.id}
+                    className="p-5 transition-shadow hover:shadow-md"
+                  >
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
@@ -168,7 +179,7 @@ export default async function DebtsPage() {
                   {paid.map((debt) => (
                     <li
                       key={debt.id}
-                      className="flex items-center justify-between gap-3 px-5 py-3"
+                      className="flex items-center justify-between gap-3 px-5 py-3 transition-colors hover:bg-slate-50/70"
                     >
                       <div className="min-w-0">
                         <Link

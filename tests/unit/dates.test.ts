@@ -5,6 +5,8 @@ import {
   formatDate,
   lastMonths,
   monthKey,
+  monthLabel,
+  monthLabelTitle,
   monthRangeUTC,
   parseDateInput,
   parseMonthKey,
@@ -86,6 +88,12 @@ describe("meses", () => {
       "2026-10",
       "2026-11",
     ]);
+  });
+
+  it("gera rótulos com a preposição em minúscula", () => {
+    const date = new Date("2026-11-10T00:00:00.000Z");
+    expect(monthLabel(date)).toBe("novembro de 2026");
+    expect(monthLabelTitle(date)).toBe("Novembro de 2026");
   });
 });
 

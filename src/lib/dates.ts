@@ -136,6 +136,12 @@ export function monthLabel(date: Date): string {
   return `${MONTHS_PT[date.getUTCMonth()]} de ${date.getUTCFullYear()}`;
 }
 
+/** Rótulo "Novembro de 2026", para títulos e navegadores. */
+export function monthLabelTitle(date: Date): string {
+  const label = monthLabel(date);
+  return label.charAt(0).toUpperCase() + label.slice(1);
+}
+
 /** Rótulo curto "nov/2026". */
 export function monthLabelShort(date: Date): string {
   return `${MONTHS_PT[date.getUTCMonth()].slice(0, 3)}/${date.getUTCFullYear()}`;

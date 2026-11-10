@@ -38,7 +38,7 @@ export default async function DashboardPage({
           </h1>
           <p className="mt-1 text-sm text-slate-500">
             Seu retrato financeiro em{" "}
-            <span className="font-medium capitalize text-slate-700">
+            <span className="font-medium text-slate-700">
               {data.month.label}
             </span>
             .
@@ -154,14 +154,14 @@ export default async function DashboardPage({
               />
             </CardContent>
           </Card>
-
-          <Card>
-            <CardContent>
-              <AccountsSummary accounts={data.accounts} />
-            </CardContent>
-          </Card>
         </div>
       </div>
+
+      <Card>
+        <CardContent>
+          <AccountsSummary accounts={data.accounts} />
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -5,7 +5,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
   addMonthsUTC,
   monthKey,
-  monthLabel,
+  monthLabelTitle,
   parseMonthKey,
 } from "@/lib/dates";
 import { cn } from "@/lib/utils";
@@ -39,18 +39,18 @@ export function MonthNavigator({
         type="button"
         aria-label="Mês anterior"
         onClick={() => goTo(previous)}
-        className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+        className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500"
       >
         <ChevronLeft className="h-4 w-4" />
       </button>
-      <span className="min-w-[144px] text-center text-xs font-semibold capitalize text-slate-700">
-        {monthLabel(date)}
+      <span className="min-w-[144px] text-center text-xs font-semibold text-slate-700">
+        {monthLabelTitle(date)}
       </span>
       <button
         type="button"
         aria-label="Próximo mês"
         onClick={() => goTo(next)}
-        className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+        className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500"
       >
         <ChevronRight className="h-4 w-4" />
       </button>

@@ -1,11 +1,13 @@
 import Link from "next/link";
 import {
   ArrowDownLeft,
+  Clock3,
   Filter,
   Pencil,
   Plus,
   Search,
   Trash2,
+  Wallet,
 } from "lucide-react";
 import { MonthNavigator } from "@/components/filters/month-navigator";
 import { Badge, Dot } from "@/components/ui/badge";
@@ -17,10 +19,9 @@ import { Label } from "@/components/ui/label";
 import { LinkButton } from "@/components/ui/link-button";
 import { PageHeader } from "@/components/ui/page-header";
 import { Select } from "@/components/ui/select";
+import { StatCard } from "@/components/ui/stat-card";
 import { SubmitButton } from "@/components/ui/submit-button";
-import {
-  INCOME_STATUS_LABELS,
-} from "@/lib/constants";
+import { INCOME_STATUS_LABELS } from "@/lib/constants";
 import {
   formatDate,
   monthKey,
@@ -77,6 +78,17 @@ export default async function IncomesPage({
   const hasFilters = Boolean(
     params.status || params.categoria || params.q || all,
   );
+  const receivedCents = incomes.reduce(
+    (sum, income) =>
+      income.status === "RECEIVED" ? sum + income.amountCents : sum,
+    0,
+  );
+  const expectedCents = incomes.reduce(
+    (sum, income) =>
+      income.status === "EXPECTED" ? sum + income.amountCents : sum,
+    0,
+  );
+  const totalCents = receivedCents + expectedCents;
 
   return (
     <div className="animate-fade-up space-y-6">
@@ -99,6 +111,31 @@ export default async function IncomesPage({
         >
           {all ? "Ver apenas este mês" : "Ver todo o histórico"}
         </Link>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
+        <StatCard
+          label="Recebido"
+          value={formatCents(receivedCents)}
+          hint="No período filtrado"
+          icon={ArrowDownLeft}
+          tone="emerald"
+        />
+        <StatCard
+          label="Previsto"
+          value={formatCents(expectedCents)}
+          hint="Ainda não entrou"
+          icon={Clock3}
+          tone="amber"
+        />
+        <StatCard
+          label="Total"
+          value={formatCents(totalCents)}
+          hint="Recebido + previsto"
+          icon={Wallet}
+          tone="slate"
+          className="col-span-2 sm:col-span-1"
+        />
       </div>
 
       <Card>
@@ -200,7 +237,7 @@ export default async function IncomesPage({
               return (
                 <li
                   key={income.id}
-                  className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center"
+                  className="flex flex-col gap-3 px-5 py-4 transition-colors hover:bg-slate-50/70 sm:flex-row sm:items-center"
                 >
                   <div className="flex min-w-0 flex-1 items-start gap-3">
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">

@@ -1,11 +1,14 @@
 import Link from "next/link";
 import {
   ArrowUpRight,
+  CalendarClock,
+  Clock3,
   Filter,
   Pencil,
   Plus,
   Search,
   Trash2,
+  Wallet,
 } from "lucide-react";
 import { MonthNavigator } from "@/components/filters/month-navigator";
 import { Badge, Dot } from "@/components/ui/badge";
@@ -17,6 +20,7 @@ import { Label } from "@/components/ui/label";
 import { LinkButton } from "@/components/ui/link-button";
 import { PageHeader } from "@/components/ui/page-header";
 import { Select } from "@/components/ui/select";
+import { StatCard } from "@/components/ui/stat-card";
 import { SubmitButton } from "@/components/ui/submit-button";
 import {
   EXPENSE_STATUS_LABELS,
@@ -74,6 +78,24 @@ export default async function ExpensesPage({
   const hasFilters = Boolean(
     params.status || params.categoria || params.q || all,
   );
+  const paidCents = expenses.reduce(
+    (sum, expense) =>
+      expense.status === "PAID" ? sum + expense.amountCents : sum,
+    0,
+  );
+  const pendingCents = expenses.reduce(
+    (sum, expense) =>
+      expense.status === "PENDING" ? sum + expense.amountCents : sum,
+    0,
+  );
+  const overdueCents = expenses.reduce(
+    (sum, expense) =>
+      expense.status !== "PAID" && daysUntil(expense.dueDate) < 0
+        ? sum + expense.amountCents
+        : sum,
+    0,
+  );
+  const totalCents = paidCents + pendingCents;
 
   return (
     <div className="animate-fade-up space-y-6">
@@ -96,6 +118,37 @@ export default async function ExpensesPage({
         >
           {all ? "Ver apenas este mês" : "Ver todo o histórico"}
         </Link>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
+        <StatCard
+          label="Pago"
+          value={formatCents(paidCents)}
+          hint="No período filtrado"
+          icon={ArrowUpRight}
+          tone="rose"
+        />
+        <StatCard
+          label="Pendente"
+          value={formatCents(pendingCents)}
+          hint="Ainda não saiu"
+          icon={Clock3}
+          tone="amber"
+        />
+        <StatCard
+          label="Em atraso"
+          value={formatCents(overdueCents)}
+          hint="Vencido e não pago"
+          icon={CalendarClock}
+          tone="rose"
+        />
+        <StatCard
+          label="Total"
+          value={formatCents(totalCents)}
+          hint="Pago + pendente"
+          icon={Wallet}
+          tone="slate"
+        />
       </div>
 
       <Card>
@@ -206,7 +259,7 @@ export default async function ExpensesPage({
               return (
                 <li
                   key={expense.id}
-                  className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center"
+                  className="flex flex-col gap-3 px-5 py-4 transition-colors hover:bg-slate-50/70 sm:flex-row sm:items-center"
                 >
                   <div className="flex min-w-0 flex-1 items-start gap-3">
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-rose-50 text-rose-600">

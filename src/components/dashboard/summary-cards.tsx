@@ -19,6 +19,7 @@ function MetricCard({
   icon,
   tone = "slate",
   valueClassName,
+  variant = "default",
 }: {
   label: string;
   value: string;
@@ -26,6 +27,7 @@ function MetricCard({
   icon: React.ReactNode;
   tone?: "slate" | "emerald" | "rose" | "amber" | "violet";
   valueClassName?: string;
+  variant?: "default" | "primary";
 }) {
   const tones = {
     slate: "bg-slate-100 text-slate-600",
@@ -34,26 +36,54 @@ function MetricCard({
     amber: "bg-amber-50 text-amber-600",
     violet: "bg-violet-50 text-violet-600",
   } as const;
+  const primary = variant === "primary";
 
   return (
-    <Card className="p-5">
-      <div className="flex items-start justify-between gap-3">
+    <Card
+      className={cn(
+        "relative overflow-hidden p-5 transition-shadow hover:shadow-md",
+        primary &&
+          "border-emerald-500/20 bg-gradient-to-br from-emerald-600 via-emerald-600 to-teal-700 text-white shadow-lg shadow-emerald-900/10",
+      )}
+    >
+      {primary ? (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -right-8 -top-10 h-32 w-32 rounded-full bg-white/10 blur-2xl"
+        />
+      ) : null}
+      <div className="relative flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-medium text-slate-500">{label}</p>
           <p
             className={cn(
-              "tabular mt-2 text-2xl font-semibold tracking-tight text-slate-900",
+              "text-xs font-medium",
+              primary ? "text-emerald-50/80" : "text-slate-500",
+            )}
+          >
+            {label}
+          </p>
+          <p
+            className={cn(
+              "tabular mt-2 text-2xl font-semibold tracking-tight",
+              primary ? "text-white" : "text-slate-900",
               valueClassName,
             )}
           >
             {value}
           </p>
-          <p className="mt-1 text-[11px] text-slate-400">{hint}</p>
+          <p
+            className={cn(
+              "mt-1 text-[11px]",
+              primary ? "text-emerald-50/60" : "text-slate-400",
+            )}
+          >
+            {hint}
+          </p>
         </div>
         <span
           className={cn(
             "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl",
-            tones[tone],
+            primary ? "bg-white/15 text-white" : tones[tone],
           )}
         >
           {icon}
@@ -75,6 +105,7 @@ export function SummaryCards({ data }: { data: DashboardData }) {
           hint="Somente dinheiro realizado"
           icon={<Wallet className="h-4 w-4" />}
           tone="slate"
+          variant="primary"
         />
         <MetricCard
           label="Receitas recebidas"
@@ -103,7 +134,7 @@ export function SummaryCards({ data }: { data: DashboardData }) {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <Card className="flex items-center gap-3 p-4">
+        <Card className="flex items-center gap-3 p-4 transition-shadow hover:shadow-md">
           <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-50 text-sky-600">
             <Clock3 className="h-4 w-4" />
           </span>
@@ -120,7 +151,7 @@ export function SummaryCards({ data }: { data: DashboardData }) {
           </span>
         </Card>
 
-        <Card className="flex items-center gap-3 p-4">
+        <Card className="flex items-center gap-3 p-4 transition-shadow hover:shadow-md">
           <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
             <CalendarClock className="h-4 w-4" />
           </span>
@@ -137,7 +168,7 @@ export function SummaryCards({ data }: { data: DashboardData }) {
           </span>
         </Card>
 
-        <Card className="flex items-center gap-3 p-4">
+        <Card className="flex items-center gap-3 p-4 transition-shadow hover:shadow-md">
           <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-50 text-violet-600">
             <CreditCard className="h-4 w-4" />
           </span>
