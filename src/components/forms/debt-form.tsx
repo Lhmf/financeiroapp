@@ -1,9 +1,9 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
 import { Loader2, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { LinkButton } from "@/components/ui/link-button";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
@@ -137,11 +137,9 @@ export function DebtForm({
       </div>
 
       <div className="flex flex-wrap items-center justify-end gap-2 border-t border-slate-100 pt-4">
-        <Link href={cancelHref}>
-          <Button variant="outline" type="button">
-            Cancelar
-          </Button>
-        </Link>
+        <LinkButton href={cancelHref} variant="outline">
+          Cancelar
+        </LinkButton>
         <Button type="submit" disabled={pending}>
           {pending ? (
             <Loader2 className="h-4 w-4 animate-spin" />
