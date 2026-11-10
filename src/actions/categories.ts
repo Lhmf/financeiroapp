@@ -69,12 +69,15 @@ export async function updateCategory(
 
   const data = parsed.data;
 
+  if (data.type !== existing.type) {
+    return { error: "O tipo da categoria não pode ser alterado." };
+  }
+
   try {
     await prisma.category.update({
       where: { id: existing.id },
       data: {
         name: data.name,
-        type: data.type,
         color: data.color,
       },
     });
