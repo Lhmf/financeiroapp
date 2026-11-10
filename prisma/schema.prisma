@@ -1,0 +1,274 @@
+// FinanceiroApp — schema Prisma
+// Valores monetários são inteiros em centavos (ex.: R$ 1.234,56 => 123456).
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------------------------------------------------------------------------
+// Autenticação (Better Auth)
+// ---------------------------------------------------------------------------
+
+model User {
+  id            String   @id
+  name          String
+  email         String   @unique
+  emailVerified Boolean  @default(false)
+  image         String?
+  categoriesSeeded Boolean @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  sessions Session[]
+  accounts Account[]
+
+  financialAccounts FinancialAccount[]
+  categories        Category[]
+  incomes           Income[]
+  expenses          Expense[]
+  debts             Debt[]
+  debtPayments      DebtPayment[]
+
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+// ---------------------------------------------------------------------------
+// Domínio financeiro
+// ---------------------------------------------------------------------------
+
+enum CategoryType {
+  INCOME
+  EXPENSE
+}
+
+enum AccountType {
+  CHECKING
+  SAVINGS
+  CASH
+  INVESTMENT
+  CREDIT_CARD
+  OTHER
+}
+
+enum IncomeStatus {
+  EXPECTED
+  RECEIVED
+}
+
+enum ExpenseStatus {
+  PENDING
+  PAID
+}
+
+enum ExpenseType {
+  FIXED
+  VARIABLE
+  OCCASIONAL
+  INSTALLMENT
+}
+
+enum PaymentMethod {
+  PIX
+  CASH
+  DEBIT
+  CREDIT
+  BOLETO
+  TRANSFER
+  OTHER
+}
+
+enum DebtType {
+  CREDIT_CARD
+  LOAN
+  FINANCING
+  INSTALLMENT
+  TAX
+  OTHER
+}
+
+enum DebtStatus {
+  ACTIVE
+  PAID
+}
+
+model FinancialAccount {
+  id                  String      @id @default(cuid())
+  userId              String
+  user                User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name                String
+  type                AccountType @default(CHECKING)
+  initialBalanceCents Int         @default(0)
+  color               String      @default("#059669")
+  archived            Boolean     @default(false)
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+
+  incomes      Income[]
+  expenses     Expense[]
+  debtPayments DebtPayment[]
+
+  @@unique([userId, name])
+  @@index([userId])
+  @@map("financial_accounts")
+}
+
+model Category {
+  id        String       @id @default(cuid())
+  userId    String
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  type      CategoryType
+  color     String       @default("#64748b")
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  incomes  Income[]
+  expenses Expense[]
+
+  @@unique([userId, name, type])
+  @@index([userId, type])
+  @@map("categories")
+}
+
+model Income {
+  id                 String         @id @default(cuid())
+  userId             String
+  user               User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  description        String
+  amountCents        Int
+  categoryId         String?
+  category           Category?      @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  source             String?
+  expectedDate       DateTime       @db.Date
+  receivedDate       DateTime?      @db.Date
+  financialAccountId String?
+  financialAccount   FinancialAccount? @relation(fields: [financialAccountId], references: [id], onDelete: SetNull)
+  status             IncomeStatus   @default(EXPECTED)
+  notes              String?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+
+  @@index([userId, status, expectedDate])
+  @@index([userId, receivedDate])
+  @@map("incomes")
+}
+
+model Expense {
+  id                 String         @id @default(cuid())
+  userId             String
+  user               User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  description        String
+  amountCents        Int
+  categoryId         String?
+  category           Category?      @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  dueDate            DateTime       @db.Date
+  paidDate           DateTime?      @db.Date
+  type               ExpenseType    @default(VARIABLE)
+  paymentMethod      PaymentMethod?
+  financialAccountId String?
+  financialAccount   FinancialAccount? @relation(fields: [financialAccountId], references: [id], onDelete: SetNull)
+  status             ExpenseStatus  @default(PENDING)
+  installmentNumber  Int?
+  installmentTotal   Int?
+  notes              String?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+
+  debtPayment DebtPayment?
+
+  @@index([userId, status, dueDate])
+  @@index([userId, paidDate])
+  @@map("expenses")
+}
+
+model Debt {
+  id                 String     @id @default(cuid())
+  userId             String
+  user               User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name               String
+  creditor           String?
+  type               DebtType   @default(OTHER)
+  initialAmountCents Int
+  dueDay             Int?
+  status             DebtStatus @default(ACTIVE)
+  notes              String?
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+
+  payments DebtPayment[]
+
+  @@index([userId, status])
+  @@map("debts")
+}
+
+model DebtPayment {
+  id                 String           @id @default(cuid())
+  userId             String
+  user               User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  debtId             String
+  debt               Debt             @relation(fields: [debtId], references: [id], onDelete: Cascade)
+  amountCents        Int
+  paidAt             DateTime         @db.Date
+  financialAccountId String?
+  financialAccount   FinancialAccount? @relation(fields: [financialAccountId], references: [id], onDelete: SetNull)
+  expenseId          String?          @unique
+  expense            Expense?         @relation(fields: [expenseId], references: [id], onDelete: SetNull)
+  notes              String?
+  createdAt          DateTime         @default(now())
+
+  @@index([userId, paidAt])
+  @@index([debtId])
+  @@map("debt_payments")
+}
