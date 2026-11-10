@@ -162,6 +162,7 @@ Implementado e verificado:
 - `npm run lint` sem erros.
 - `npx tsc --noEmit` sem erros.
 - `npm test` com 30 testes passando.
+- `npm run test:e2e` com 2 testes passando.
 - Páginas e ações do MVP criadas.
 
 Pendente:

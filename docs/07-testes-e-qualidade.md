@@ -172,6 +172,7 @@ npm run build
 - `npx tsc --noEmit`: sem erros.
 - `npm run build`: sucesso.
 - `npm test`: 30 testes passando.
+- `npm run test:e2e`: 2 testes passando (Chromium).
 
 ## O que ainda não está automatizado
 
