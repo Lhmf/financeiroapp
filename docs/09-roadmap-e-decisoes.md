@@ -132,7 +132,7 @@
 
 ### D17 — Conexão direta para migrações
 
-**Decisão:** usar `DATABASE_URL_UNPOOLED` (direct) no `prisma7.config.ts` quando disponível; o runtime continua com a pooled.
+**Decisão:** usar `DIRECT_URL` (com `DATABASE_URL_UNPOOLED` como fallback de compatibilidade) no `prisma7.config.ts`; o runtime continua com a pooled.
 
 **Motivo:** evitar limitações de PgBouncer em migrações e inspeção.
 
@@ -203,7 +203,7 @@
 ## Próximos passos imediatos
 
 1. Reivindicar o projeto Neon claimable antes de **2026-11-13T16:15:55Z** e gerar um novo link se o código expirar.
-2. Se as URLs mudarem, atualizar `DATABASE_URL` e `DATABASE_URL_UNPOOLED` e rodar `npx prisma migrate status`.
+2. Se as URLs mudarem, atualizar `DATABASE_URL` e `DIRECT_URL` e rodar `npx prisma migrate status`.
 3. Completar os itens manuais pendentes de [07 — Testes e qualidade](./07-testes-e-qualidade.md).
 4. Configurar CI com uma branch Neon efêmera.
 5. Configurar backup/PITR depois do claim.

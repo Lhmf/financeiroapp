@@ -90,7 +90,7 @@ Nunca use `findUnique({ where: { id } })` para decidir se pode alterar um regist
 Variáveis sensíveis:
 
 - `DATABASE_URL`
-- `DATABASE_URL_UNPOOLED` (quando usada para migrações)
+- `DIRECT_URL` (conexão direta para migrações; `DATABASE_URL_UNPOOLED` é aceita por compatibilidade)
 - `BETTER_AUTH_SECRET`
 - `BETTER_AUTH_URL` (não é segredo, mas precisa estar correta)
 
@@ -106,7 +106,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 ```
 
 - No Neon, use a connection string **pooled** na aplicação.
-- O `prisma7.config.ts` usa `DATABASE_URL_UNPOOLED` automaticamente para migrações e inspeção quando ela existe; caso contrário, usa a pooled.
+- O `prisma7.config.ts` usa `DIRECT_URL` automaticamente para migrações e inspeção quando ela existe; `DATABASE_URL_UNPOOLED` é aceita como fallback de compatibilidade e a pooled é o último recurso.
 - Prefira `sslmode=verify-full` para validar o certificado do servidor.
 
 ## Superfície de ataque do MVP
@@ -136,12 +136,12 @@ node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 9. Não logue senhas, tokens ou connection strings.
 10. Não adicione cache de página autenticada sem revisar o isolamento.
 
-> **Validação de isolamento (10/11/2026):** um segundo usuário foi criado temporariamente, viu o dashboard vazio e recebeu a página “Recurso não encontrado” ao acessar IDs do usuário demo. A conta temporária foi removida depois. O teste não é permanente; veja a dívida técnica em `docs/07-testes-e-qualidade.md`.
+> **Validação de isolamento (10/11/2026):** o teste permanente `tests/e2e/isolation.spec.ts` cria dois usuários temporários, comprova que B não vê a receita de A e que o acesso direto ao ID de A resulta em “Recurso não encontrado”, e remove os dois usuários no `afterAll`. Rode com `E2E_WITH_DB=1`.
 
 ## Checklist para produção
 
 - [ ] `DATABASE_URL` de produção configurada no painel da Vercel.
-- [ ] `DATABASE_URL_UNPOOLED` configurada para migrações (opcional se o provedor não fornecer).
+- [ ] `DIRECT_URL` configurada para migrações (opcional se o provedor não fornecer).
 - [ ] `BETTER_AUTH_SECRET` novo e forte.
 - [ ] `BETTER_AUTH_URL` com a URL pública HTTPS.
 - [ ] Migrações aplicadas com `prisma migrate deploy`.

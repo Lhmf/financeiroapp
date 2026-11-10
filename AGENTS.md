@@ -101,7 +101,7 @@ Mantenha o README e o AGENTS.md coerentes.
 - Corrija a causa, não o teste, salvo se o teste estiver errado.
 - Rode `npm test`, `npm run lint`, `npx tsc --noEmit` e `npm run build` antes de concluir.
 - Testes E2E com banco exigem `DATABASE_URL` real e o seed demo.
-- O teste completo é opt-in: `E2E_WITH_DB=1 npx playwright test tests/e2e/mvp.spec.ts`.
+- O teste completo é opt-in: `E2E_WITH_DB=1 npx playwright test tests/e2e/mvp.spec.ts tests/e2e/isolation.spec.ts`.
 - Não use dados reais de produção em testes.
 
 ## Git
@@ -122,7 +122,7 @@ Mantenha o README e o AGENTS.md coerentes.
 
 ## Estado conhecido
 
-- O `.env` local aponta para um banco **Neon claimable de desenvolvimento**; a `DATABASE_URL` pooled é usada pelo app e a `DATABASE_URL_UNPOOLED` pelas migrações.
+- O `.env` local aponta para um banco **Neon claimable de desenvolvimento**; a `DATABASE_URL` pooled é usada pelo app e a `DIRECT_URL` (ou `DATABASE_URL_UNPOOLED`, por compatibilidade) pelas migrações.
 - A migration `20261110161632_init` foi aplicada e o seed demo foi executado contra esse banco.
 - O projeto Neon `flat-queen-78874900` precisa ser reivindicado até **2026-11-13T16:15:55Z**; depois do claim, as URLs podem mudar.
 - O seed demo é `demo@financeiro.local` / `demo12345`.

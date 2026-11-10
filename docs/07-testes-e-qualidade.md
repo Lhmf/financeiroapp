@@ -67,6 +67,7 @@ Arquivos:
 
 - `tests/e2e/auth.spec.ts` — smoke sem banco.
 - `tests/e2e/mvp.spec.ts` — fluxo completo com banco real, opt-in.
+- `tests/e2e/isolation.spec.ts` — isolamento entre dois usuários, opt-in e com limpeza automática.
 
 O smoke cobre:
 
@@ -92,6 +93,14 @@ O teste com banco cobre:
 - filtros e alternância de histórico;
 - logout e proteção de rota.
 
+O teste de isolamento cobre:
+
+- cadastro de dois usuários independentes;
+- criação de conta e receita recebida pelo usuário A;
+- ausência da receita no dashboard e na lista do usuário B;
+- acesso direto de B à URL de edição de A resultando em “Recurso não encontrado”;
+- remoção dos dois usuários temporários no `afterAll`, via conexão direta `pg`.
+
 Rodar o smoke:
 
 ```bash
@@ -103,7 +112,14 @@ Rodar o fluxo completo (PowerShell):
 
 ```powershell
 $env:E2E_WITH_DB="1"
+npx playwright test --workers=1 --reporter=line
+```
+
+Para rodar apenas o MVP ou apenas o isolamento, informe o arquivo:
+
+```powershell
 npx playwright test tests/e2e/mvp.spec.ts --workers=1 --reporter=line
+npx playwright test tests/e2e/isolation.spec.ts --workers=1 --reporter=line
 ```
 
 Em Linux/macOS:
@@ -126,7 +142,7 @@ Em **10/11/2026**, contra o Neon claimable de desenvolvimento:
 - `npm run build`: sucesso com Next.js 16.4.6.
 - `npm run test:e2e`: 2 testes de autenticação passando.
 - Teste completo com banco: passando em **53,6s**.
-- Isolamento: um segundo usuário foi criado temporariamente, viu dashboard vazio e não conseguiu acessar os IDs do usuário demo; a conta temporária foi removida.
+- Isolamento: **1 teste permanente** passando em **25,3s**, com dois usuários temporários removidos no `afterAll`.
 - Valores do seed conferidos: saldo total **R$ 17.417,00**, receitas recebidas **R$ 6.590,00**, despesas pagas **R$ 3.973,00**, resultado **R$ 2.617,00** no mês.
 - O pagamento vinculado de **R$ 500,00** aparece como despesa paga e não é descontado de novo no saldo da conta.
 
@@ -224,13 +240,12 @@ npm run build
 - `npm run build`: sucesso.
 - `npm test`: 34 testes passando em 4 arquivos.
 - `npm run test:e2e`: 2 testes de autenticação passando (Chromium).
-- Teste E2E com banco: 1 teste completo passando (opt-in com `E2E_WITH_DB=1`).
+- Teste E2E com banco: 2 testes opt-in passando com `E2E_WITH_DB=1` (MVP completo + isolamento).
 
 ## O que ainda não está automatizado
 
 - O teste E2E com banco é opt-in e não roda no CI.
 - Testes de Server Actions com `FormData` reais.
-- Teste permanente de isolamento entre usuários.
 - Testes de formulários client.
 - Testes de acessibilidade.
 - Testes de responsividade visual.
@@ -241,10 +256,9 @@ npm run build
 
 1. Criar uma branch Neon efêmera para o CI e rodar migrações + seed nela.
 2. Testar as ações com `FormData` reais.
-3. Transformar a validação manual de isolamento em um teste permanente com limpeza automática.
-4. Rodar o teste de não duplicação de dívida no CI, não apenas localmente.
-5. Configurar CI (GitHub Actions) com lint, tipos, unitários, build e Playwright.
-6. Usar um seed exclusivo de teste para não depender do usuário demo.
+3. Rodar o teste de não duplicação de dívida no CI, não apenas localmente.
+4. Configurar CI (GitHub Actions) com lint, tipos, unitários, build e Playwright.
+5. Usar um seed exclusivo de teste para não depender do usuário demo.
 
 ## Convenções de teste
 

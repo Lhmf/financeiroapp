@@ -62,7 +62,7 @@ npm install
 copy .env.example .env   # Windows
 # cp .env.example .env   # Linux/macOS
 
-# 3. Preencher DATABASE_URL, DATABASE_URL_UNPOOLED, BETTER_AUTH_SECRET e BETTER_AUTH_URL
+# 3. Preencher DATABASE_URL, DIRECT_URL, BETTER_AUTH_SECRET e BETTER_AUTH_URL
 
 # 4. Aplicar as migrations existentes
 npx prisma migrate dev
@@ -90,7 +90,7 @@ Acesse [http://localhost:3000](http://localhost:3000).
 DATABASE_URL="postgresql://usuario:senha@host-pooler.neon.tech/neondb?sslmode=verify-full"
 
 # Migrações e inspeção (direct). O prisma7.config.ts usa esta URL quando existe.
-DATABASE_URL_UNPOOLED="postgresql://usuario:senha@host.neon.tech/neondb?sslmode=verify-full"
+DIRECT_URL="postgresql://usuario:senha@host.neon.tech/neondb?sslmode=verify-full"
 
 BETTER_AUTH_SECRET="segredo-aleatorio-de-32-bytes"
 BETTER_AUTH_URL="http://localhost:3000"
@@ -118,7 +118,7 @@ Nunca comite o `.env`.
 | `npm test` | Testes unitários |
 | `npm run test:watch` | Testes em watch |
 | `npm run test:e2e` | Playwright (smoke sem banco) |
-| `E2E_WITH_DB=1 npm run test:e2e` | Playwright + teste completo com banco/seed |
+| `E2E_WITH_DB=1 npm run test:e2e` | Playwright + fluxo completo e isolamento com banco/seed |
 | `npm run db:generate` | Gerar Prisma Client |
 | `npm run db:migrate` | Criar/aplicar migration em dev |
 | `npm run db:deploy` | Aplicar migrations em produção |
@@ -133,7 +133,7 @@ $env:E2E_WITH_DB="1"
 npm run test:e2e
 ```
 
-O teste com banco cria dados temporários com nomes únicos, valida CRUD, persistência, filtros, dívidas e arquivamento de conta, e remove o que criou. Ele usa o usuário demo do seed e **não deve ser rodado contra dados reais**. O isolamento entre usuários foi validado separadamente com um segundo usuário temporário.
+O teste com banco cria dados temporários com nomes únicos, valida CRUD, persistência, filtros, dívidas e arquivamento de conta, e remove o que criou. Ele usa o usuário demo do seed e **não deve ser rodado contra dados reais**. O isolamento entre usuários é validado por `tests/e2e/isolation.spec.ts`, que cria dois usuários temporários e os remove no `afterAll`.
 
 ## Estrutura
 
@@ -182,12 +182,12 @@ Implementado e verificado contra um banco Neon real (claimable, região `aws-sa-
 - `npx tsc --noEmit` sem erros.
 - `npm test` com **34 testes** passando.
 - `npm run test:e2e` com 2 testes de autenticação passando.
-- `E2E_WITH_DB=1 npx playwright test tests/e2e/mvp.spec.ts` com o fluxo completo passando.
+- `E2E_WITH_DB=1 npx playwright test --workers=1` com o fluxo MVP e o teste de isolamento passando.
 - Migration `20261110161632_init` aplicada.
 - Seed demo aplicado; login `demo@financeiro.local` / `demo12345` validado.
 - Dashboard real conferido: saldo total de **R$ 17.417,00**, receitas recebidas de **R$ 6.590,00**, despesas pagas de **R$ 3.973,00** e resultado de **R$ 2.617,00** no mês.
 - Pagamento de dívida com despesa vinculada não é contado duas vezes; a despesa e o pagamento têm o mesmo valor e a conta não sofre dupla saída.
-- Isolamento validado com um segundo usuário: dashboard vazio e acesso direto a IDs do demo não exibiu dados nem formulários.
+- Isolamento comprovado por teste permanente com dois usuários: dashboard vazio e acesso direto a IDs de outro usuário resultam em “Recurso não encontrado”.
 - Exportação JSON, categorias e configurações revisadas no código; a validação manual restante está em [docs/07-testes-e-qualidade.md](./docs/07-testes-e-qualidade.md).
 
 Banco de desenvolvimento atual:
@@ -195,7 +195,7 @@ Banco de desenvolvimento atual:
 - Projeto claimable `flat-queen-78874900`.
 - Branch `br-withered-cloud-b6336hbc`.
 - Expira em **2026-11-13T16:15:55Z** se não for reivindicado.
-- Após o claim, as URLs de conexão podem mudar; atualize `DATABASE_URL` e `DATABASE_URL_UNPOOLED`.
+- Após o claim, as URLs de conexão podem mudar; atualize `DATABASE_URL` e `DIRECT_URL`.
 - O link/código de claim não é armazenado no repositório.
 
 Pendente:

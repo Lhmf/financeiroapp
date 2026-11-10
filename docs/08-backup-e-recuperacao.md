@@ -108,7 +108,7 @@ O Neon oferece recursos de recuperação conforme o plano:
 ### Cenário 3: perda do banco/projeto
 
 1. Crie um novo projeto Neon.
-2. Atualize `DATABASE_URL` e `DATABASE_URL_UNPOOLED`.
+2. Atualize `DATABASE_URL` e `DIRECT_URL`.
 3. Rode `npm run db:deploy` para recriar o schema.
 4. Recadastre os dados a partir do export JSON mais recente (manual) ou de um dump do banco.
 5. Teste login e dashboard.

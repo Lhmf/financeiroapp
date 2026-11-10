@@ -12,6 +12,10 @@ export default defineConfig({
   datasource: {
     // Migrações e inspeção usam a conexão direta quando disponível.
     // A aplicação em execução continua usando a conexão pooled.
-    url: process.env["DATABASE_URL_UNPOOLED"] ?? process.env["DATABASE_URL"],
+    // DIRECT_URL é o nome canônico; DATABASE_URL_UNPOOLED é mantida por compatibilidade.
+    url:
+      process.env["DIRECT_URL"] ??
+      process.env["DATABASE_URL_UNPOOLED"] ??
+      process.env["DATABASE_URL"],
   },
 });
