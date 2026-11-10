@@ -3,10 +3,30 @@ import { prismaAdapter } from "@better-auth/prisma-adapter";
 import { nextCookies } from "better-auth/next-js";
 import { prisma } from "./prisma";
 
+const vercelDeploymentUrl = process.env.VERCEL_URL
+  ? `https://${process.env.VERCEL_URL}`
+  : null;
+const vercelProductionUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
+  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+  : null;
+const appUrl =
+  process.env.BETTER_AUTH_URL ??
+  vercelProductionUrl ??
+  vercelDeploymentUrl ??
+  "http://localhost:3000";
+
+const trustedOrigins = Array.from(
+  new Set(
+    [appUrl, vercelProductionUrl, vercelDeploymentUrl].filter(
+      (origin): origin is string => Boolean(origin),
+    ),
+  ),
+);
+
 export const auth = betterAuth({
   appName: "FinanceiroApp",
-  baseURL: process.env.BETTER_AUTH_URL,
-  trustedOrigins: [process.env.BETTER_AUTH_URL ?? "http://localhost:3000"],
+  baseURL: appUrl,
+  trustedOrigins,
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
