@@ -21,7 +21,7 @@ export function DebtSummary({
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
           <h3 className="text-sm font-semibold text-slate-900">Dívidas ativas</h3>
-          <p className="mt-0.5 text-xs text-slate-500">
+          <p className="mt-0.5 text-xs text-slate-600">
             Saldo devedor restante
           </p>
         </div>
@@ -34,7 +34,7 @@ export function DebtSummary({
       </div>
 
       <div className="mb-4 rounded-xl bg-violet-50 px-4 py-3">
-        <p className="text-[10px] font-medium uppercase tracking-wide text-violet-500">
+        <p className="text-[10px] font-medium uppercase tracking-wide text-violet-700">
           Total devedor
         </p>
         <p className="tabular text-lg font-semibold text-violet-800">
@@ -58,7 +58,7 @@ export function DebtSummary({
                   <p className="truncate text-xs font-medium text-slate-800">
                     {debt.name}
                   </p>
-                  <p className="truncate text-[11px] text-slate-400">
+                  <p className="truncate text-[11px] text-slate-600">
                     {debt.creditor || "Sem credor informado"}
                   </p>
                 </div>
@@ -72,7 +72,7 @@ export function DebtSummary({
                   style={{ width: `${Math.max(3, debt.progress)}%` }}
                 />
               </div>
-              <p className="mt-1 text-right text-[10px] text-slate-400">
+              <p className="mt-1 text-right text-[10px] text-slate-600">
                 {debt.progress}% pago
               </p>
             </li>

@@ -31,7 +31,7 @@ function MetricCard({
 }) {
   const tones = {
     slate: "bg-slate-100 text-slate-600",
-    emerald: "bg-emerald-50 text-emerald-600",
+    emerald: "bg-emerald-50 text-emerald-700",
     rose: "bg-rose-50 text-rose-600",
     amber: "bg-amber-50 text-amber-600",
     violet: "bg-violet-50 text-violet-600",
@@ -43,8 +43,9 @@ function MetricCard({
       className={cn(
         "relative overflow-hidden p-5 transition-shadow hover:shadow-md",
         primary &&
-          "border-emerald-500/20 bg-gradient-to-br from-emerald-600 via-emerald-600 to-teal-700 text-white shadow-lg shadow-emerald-900/10",
+          "border-emerald-500/20 bg-gradient-to-br from-emerald-700 via-emerald-700 to-teal-800 text-white shadow-lg shadow-emerald-900/15",
       )}
+      style={primary ? { backgroundColor: "#047857" } : undefined}
     >
       {primary ? (
         <span
@@ -57,7 +58,7 @@ function MetricCard({
           <p
             className={cn(
               "text-xs font-medium",
-              primary ? "text-emerald-50/80" : "text-slate-500",
+              primary ? "text-emerald-50" : "text-slate-600",
             )}
           >
             {label}
@@ -74,7 +75,7 @@ function MetricCard({
           <p
             className={cn(
               "mt-1 text-[11px]",
-              primary ? "text-emerald-50/60" : "text-slate-400",
+              primary ? "text-emerald-50" : "text-slate-600",
             )}
           >
             {hint}
@@ -139,14 +140,14 @@ export function SummaryCards({ data }: { data: DashboardData }) {
             <Clock3 className="h-4 w-4" />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="text-[11px] font-medium text-slate-500">
+            <p className="text-[11px] font-medium text-slate-600">
               Receitas previstas
             </p>
             <p className="tabular text-base font-semibold text-slate-900">
               {formatCents(data.expectedIncomeCents)}
             </p>
           </div>
-          <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-500">
+          <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600">
             {data.expectedIncomeCount}
           </span>
         </Card>
@@ -156,14 +157,14 @@ export function SummaryCards({ data }: { data: DashboardData }) {
             <CalendarClock className="h-4 w-4" />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="text-[11px] font-medium text-slate-500">
+            <p className="text-[11px] font-medium text-slate-600">
               Despesas pendentes
             </p>
             <p className="tabular text-base font-semibold text-slate-900">
               {formatCents(data.pendingExpenseCents)}
             </p>
           </div>
-          <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-500">
+          <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600">
             {data.pendingExpenseCount}
           </span>
         </Card>
@@ -173,14 +174,14 @@ export function SummaryCards({ data }: { data: DashboardData }) {
             <CreditCard className="h-4 w-4" />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="text-[11px] font-medium text-slate-500">
+            <p className="text-[11px] font-medium text-slate-600">
               Dívidas ativas
             </p>
             <p className="tabular text-base font-semibold text-slate-900">
               {formatCents(data.totalDebtCents)}
             </p>
           </div>
-          <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-500">
+          <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600">
             {data.activeDebtCount}
           </span>
         </Card>

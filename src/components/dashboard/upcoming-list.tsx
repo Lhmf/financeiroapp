@@ -28,11 +28,13 @@ function DateBadge({ dateISO }: { dateISO: string }) {
     .replace(".", "");
 
   return (
-    <span className="flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-xl bg-slate-50 text-slate-500 ring-1 ring-slate-100">
+    <span className="flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-xl bg-slate-50 text-slate-600 ring-1 ring-slate-200">
       <span className="text-[13px] font-semibold leading-none text-slate-800">
         {day}
       </span>
-      <span className="mt-0.5 text-[9px] uppercase leading-none">{month}</span>
+      <span className="mt-0.5 text-[10px] font-medium uppercase leading-none">
+        {month}
+      </span>
     </span>
   );
 }
@@ -76,7 +78,7 @@ export function UpcomingList({
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
           <h3 className="text-sm font-semibold text-slate-900">{title}</h3>
-          <p className="mt-0.5 text-xs text-slate-500">{description}</p>
+          <p className="mt-0.5 text-xs text-slate-600">{description}</p>
         </div>
         <Link
           href={hrefBase}
@@ -107,7 +109,7 @@ export function UpcomingList({
                     <p className="truncate text-xs font-medium text-slate-800">
                       {item.description}
                     </p>
-                    <div className="mt-0.5 flex items-center gap-1.5 text-[11px] text-slate-400">
+                    <div className="mt-0.5 flex items-center gap-1.5 text-[11px] text-slate-600">
                       <Dot color={item.categoryColor} />
                       <span className="truncate">{item.categoryName}</span>
                       <span>·</span>
@@ -120,7 +122,7 @@ export function UpcomingList({
                         "tabular text-xs font-semibold",
                         kind === "expense"
                           ? "text-rose-600"
-                          : "text-emerald-600",
+                          : "text-emerald-700",
                       )}
                     >
                       {kind === "expense" ? "−" : "+"}

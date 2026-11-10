@@ -55,13 +55,13 @@ export default async function SettingsPage({
           <Card>
             <CardHeader>
               <div className="flex items-center gap-2">
-                <UserRound className="h-4 w-4 text-slate-400" />
+                <UserRound className="h-4 w-4 text-slate-500" />
                 <CardTitle>Perfil</CardTitle>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="rounded-xl bg-slate-50 px-3 py-2.5">
-                <p className="text-[10px] font-medium uppercase tracking-wide text-slate-400">
+                <p className="text-[11px] font-medium uppercase tracking-wide text-slate-500">
                   E-mail da conta
                 </p>
                 <p className="mt-0.5 text-sm font-medium text-slate-700">
@@ -76,7 +76,7 @@ export default async function SettingsPage({
             <CardHeader>
               <div>
                 <CardTitle>Categorias</CardTitle>
-                <p className="mt-0.5 text-xs text-slate-500">
+                <p className="mt-0.5 text-xs text-slate-600">
                   Organize receitas e despesas do seu jeito.
                 </p>
               </div>
@@ -99,12 +99,12 @@ export default async function SettingsPage({
                   },
                 ].map((group) => (
                   <div key={group.title}>
-                    <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
+                    <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-600">
                       {group.title}
                     </h3>
                     <ul className="space-y-1.5">
                       {group.items.length === 0 ? (
-                        <li className="rounded-xl border border-dashed border-slate-200 px-3 py-4 text-center text-[11px] text-slate-400">
+                        <li className="rounded-xl border border-dashed border-slate-200 px-3 py-4 text-center text-[11px] text-slate-600">
                           Nenhuma categoria.
                         </li>
                       ) : (
@@ -122,7 +122,7 @@ export default async function SettingsPage({
                             </Badge>
                             <Link
                               href={`/configuracoes/categorias/${category.id}/editar`}
-                              className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                              className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
                               title="Editar categoria"
                             >
                               <Pencil className="h-3.5 w-3.5" />
@@ -138,7 +138,7 @@ export default async function SettingsPage({
                                 variant="ghost"
                                 pendingLabel="..."
                                 confirmMessage="Excluir esta categoria? Só é possível se não houver lançamentos vinculados."
-                                className="h-7 w-7 px-0 text-rose-400 hover:bg-rose-50 hover:text-rose-600"
+                                className="h-7 w-7 px-0 text-rose-600 hover:bg-rose-50 hover:text-rose-600"
                               >
                                 <Trash2 className="h-3.5 w-3.5" />
                               </SubmitButton>
@@ -158,12 +158,12 @@ export default async function SettingsPage({
           <Card>
             <CardHeader>
               <div className="flex items-center gap-2">
-                <Download className="h-4 w-4 text-slate-400" />
+                <Download className="h-4 w-4 text-slate-500" />
                 <CardTitle>Backup dos dados</CardTitle>
               </div>
             </CardHeader>
             <CardContent className="space-y-3">
-              <p className="text-[11px] leading-relaxed text-slate-500">
+              <p className="text-[11px] leading-relaxed text-slate-600">
                 Baixe um arquivo JSON com suas contas, categorias, receitas,
                 despesas, dívidas e pagamentos. O arquivo não inclui senha nem
                 tokens de sessão.
@@ -178,7 +178,7 @@ export default async function SettingsPage({
                 <Download className="h-3.5 w-3.5" />
                 Exportar JSON
               </LinkButton>
-              <p className="text-[10px] leading-relaxed text-slate-400">
+              <p className="text-[11px] leading-relaxed text-slate-600">
                 Guarde o arquivo em local seguro. A restauração automática
                 ainda não faz parte do MVP.
               </p>
@@ -188,11 +188,11 @@ export default async function SettingsPage({
           <Card>
             <CardHeader>
               <div className="flex items-center gap-2">
-                <ShieldCheck className="h-4 w-4 text-slate-400" />
+                <ShieldCheck className="h-4 w-4 text-slate-500" />
                 <CardTitle>Privacidade</CardTitle>
               </div>
             </CardHeader>
-            <CardContent className="space-y-2 text-[11px] leading-relaxed text-slate-500">
+            <CardContent className="space-y-2 text-[11px] leading-relaxed text-slate-600">
               <p>
                 Seus dados são isolados por usuário. Todas as consultas e ações
                 usam o identificador da sessão autenticada.

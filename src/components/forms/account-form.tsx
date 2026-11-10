@@ -99,7 +99,7 @@ export function AccountForm({
               defaultValue={defaultValues.color ?? "#059669"}
               className="h-10 w-14 cursor-pointer rounded-xl border border-slate-200 bg-white p-1 shadow-sm"
             />
-            <span className="text-xs text-slate-400">
+            <span className="text-xs text-slate-600">
               Usada nos gráficos e cartões.
             </span>
           </div>

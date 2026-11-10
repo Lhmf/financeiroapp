@@ -75,7 +75,10 @@ export default async function AccountsPage({
         </Alert>
       ) : null}
 
-      <Card className="relative overflow-hidden border-emerald-500/20 bg-gradient-to-br from-emerald-600 via-emerald-600 to-teal-700 p-5 text-white shadow-lg shadow-emerald-900/10">
+      <Card
+        className="relative overflow-hidden border-emerald-500/20 bg-gradient-to-br from-emerald-700 via-emerald-700 to-teal-800 p-5 text-white shadow-lg shadow-emerald-900/15"
+        style={{ backgroundColor: "#047857" }}
+      >
         <span
           aria-hidden
           className="pointer-events-none absolute -right-10 -top-12 h-40 w-40 rounded-full bg-white/10 blur-2xl"
@@ -83,7 +86,7 @@ export default async function AccountsPage({
         <div className="relative">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="text-xs font-medium text-emerald-50/80">
+              <p className="text-xs font-medium text-white">
                 Saldo total
                 {hasArchived ? " (inclui contas arquivadas)" : ""}
               </p>
@@ -91,11 +94,11 @@ export default async function AccountsPage({
                 {formatCents(total)}
               </p>
             </div>
-            <span className="rounded-full bg-white/10 px-2.5 py-1 text-[10px] font-medium text-emerald-50/90">
+            <span className="rounded-full bg-white/15 px-2.5 py-1 text-[10px] font-medium text-white">
               {accounts.length} {accounts.length === 1 ? "conta" : "contas"}
             </span>
           </div>
-          <p className="mt-2 max-w-2xl text-[11px] leading-relaxed text-emerald-50/60">
+          <p className="mt-2 max-w-2xl text-[11px] leading-relaxed text-emerald-50">
             Saldo inicial + receitas recebidas − despesas pagas − pagamentos de
             dívida sem despesa vinculada.
           </p>
@@ -150,13 +153,13 @@ export default async function AccountsPage({
                             <Badge tone="slate">Arquivada</Badge>
                           ) : null}
                         </div>
-                        <p className="text-[11px] text-slate-400">
+                        <p className="text-[11px] text-slate-600">
                           {ACCOUNT_TYPE_LABELS[account.type]}
                         </p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-[10px] font-medium uppercase tracking-wide text-slate-400">
+                      <p className="text-[10px] font-medium uppercase tracking-wide text-slate-600">
                         Saldo atual
                       </p>
                       <p className="tabular text-lg font-semibold text-slate-900">
@@ -166,7 +169,7 @@ export default async function AccountsPage({
                   </div>
 
                   <div className="flex items-center justify-between rounded-xl bg-slate-50 px-3 py-2">
-                    <span className="text-[11px] text-slate-500">
+                    <span className="text-[11px] text-slate-600">
                       Saldo inicial
                     </span>
                     <span className="tabular text-xs font-medium text-slate-700">
@@ -177,7 +180,7 @@ export default async function AccountsPage({
                   <div className="flex flex-wrap items-center justify-end gap-1.5 border-t border-slate-100 pt-3">
                     <Link
                       href={`/contas/${account.id}/editar`}
-                      className="inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
+                      className="inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-800"
                     >
                       <Pencil className="h-3.5 w-3.5" />
                       Editar
@@ -211,7 +214,7 @@ export default async function AccountsPage({
                         variant="ghost"
                         pendingLabel="Excluindo..."
                         confirmMessage="Excluir esta conta? Se houver movimentações, a exclusão será bloqueada."
-                        className="text-rose-500 hover:bg-rose-50 hover:text-rose-700"
+                        className="text-rose-600 hover:bg-rose-50 hover:text-rose-700"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                         Excluir

@@ -46,7 +46,7 @@ export function LoginForm({ next }: { next?: string }) {
   return (
     <div>
       <div className="mb-7">
-        <p className="text-xs font-medium uppercase tracking-[0.16em] text-emerald-600">
+        <p className="text-xs font-medium uppercase tracking-[0.16em] text-emerald-700">
           Bem-vindo de volta
         </p>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-900">
@@ -87,7 +87,7 @@ export function LoginForm({ next }: { next?: string }) {
             <button
               type="button"
               onClick={() => setShowPassword((value) => !value)}
-              className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-slate-400 hover:text-slate-600"
+              className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-slate-500 hover:text-slate-700"
               aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
             >
               {showPassword ? (
@@ -109,7 +109,7 @@ export function LoginForm({ next }: { next?: string }) {
         </Button>
       </form>
 
-      <p className="mt-6 text-center text-xs text-slate-500">
+      <p className="mt-6 text-center text-xs text-slate-600">
         Ainda não tem conta?{" "}
         <Link
           href="/cadastro"

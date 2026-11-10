@@ -151,7 +151,7 @@ export default async function IncomesPage({
             <div className="min-w-[200px] flex-1">
               <Label htmlFor="q">Buscar</Label>
               <div className="relative">
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
                 <Input
                   id="q"
                   name="q"
@@ -199,7 +199,7 @@ export default async function IncomesPage({
             {hasFilters ? (
               <Link
                 href={`/receitas?mes=${currentMonth}`}
-                className="pb-2 text-xs font-medium text-slate-500 hover:text-slate-800"
+                className="pb-2 text-xs font-medium text-slate-600 hover:text-slate-800"
               >
                 Limpar filtros
               </Link>
@@ -210,7 +210,7 @@ export default async function IncomesPage({
 
       <Card>
         <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-5 py-3">
-          <p className="text-xs font-medium text-slate-500">
+          <p className="text-xs font-medium text-slate-600">
             {incomes.length} {incomes.length === 1 ? "receita" : "receitas"}
             {all ? " no histórico" : " neste mês"}
           </p>
@@ -240,7 +240,7 @@ export default async function IncomesPage({
                   className="flex flex-col gap-3 px-5 py-4 transition-colors hover:bg-slate-50/70 sm:flex-row sm:items-center"
                 >
                   <div className="flex min-w-0 flex-1 items-start gap-3">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
                       <ArrowDownLeft className="h-4 w-4" />
                     </span>
                     <div className="min-w-0">
@@ -252,7 +252,7 @@ export default async function IncomesPage({
                           {INCOME_STATUS_LABELS[income.status]}
                         </Badge>
                       </div>
-                      <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-slate-400">
+                      <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-slate-600">
                         {income.category ? (
                           <span className="inline-flex items-center gap-1">
                             <Dot color={income.category.color} />
@@ -266,7 +266,7 @@ export default async function IncomesPage({
                         {income.receivedDate ? (
                           <>
                             <span>·</span>
-                            <span className="text-emerald-600">
+                            <span className="text-emerald-700">
                               Recebida: {formatDate(income.receivedDate)}
                             </span>
                           </>
@@ -282,7 +282,7 @@ export default async function IncomesPage({
                   </div>
 
                   <div className="flex items-center justify-between gap-2 sm:justify-end">
-                    <p className="tabular text-sm font-semibold text-emerald-600">
+                    <p className="tabular text-sm font-semibold text-emerald-700">
                       +{formatCents(income.amountCents)}
                     </p>
 
@@ -302,7 +302,7 @@ export default async function IncomesPage({
 
                       <Link
                         href={`/receitas/${income.id}/editar`}
-                        className="inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
+                        className="inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-800"
                       >
                         <Pencil className="h-3.5 w-3.5" />
                         Editar
@@ -315,7 +315,7 @@ export default async function IncomesPage({
                           variant="ghost"
                           pendingLabel="Excluindo..."
                           confirmMessage="Excluir esta receita? Essa ação não pode ser desfeita."
-                          className="text-rose-500 hover:bg-rose-50 hover:text-rose-700"
+                          className="text-rose-600 hover:bg-rose-50 hover:text-rose-700"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
                           Excluir

@@ -27,7 +27,7 @@ export default async function AuthLayout({
             </span>
             <div>
               <p className="text-sm font-semibold">FinanceiroApp</p>
-              <p className="text-[11px] uppercase tracking-[0.16em] text-white/40">
+              <p className="text-[11px] uppercase tracking-[0.16em] text-white/60">
                 Finanças pessoais
               </p>
             </div>
@@ -40,7 +40,7 @@ export default async function AuthLayout({
             <h1 className="mt-3 text-4xl font-semibold leading-[1.1] tracking-tight">
               Saiba exatamente quanto você tem, deve e pode usar.
             </h1>
-            <p className="mt-5 text-sm leading-relaxed text-white/60">
+            <p className="mt-5 text-sm leading-relaxed text-white/75">
               Receitas, despesas, dívidas e contas em um só lugar — com o
               realizado sempre separado do previsto.
             </p>
@@ -78,7 +78,7 @@ export default async function AuthLayout({
                   <p className="text-xs font-semibold text-white">
                     {item.title}
                   </p>
-                  <p className="mt-0.5 text-[11px] leading-relaxed text-white/50">
+                  <p className="mt-0.5 text-[11px] leading-relaxed text-white/70">
                     {item.description}
                   </p>
                 </div>
@@ -87,7 +87,7 @@ export default async function AuthLayout({
           </div>
         </div>
 
-        <p className="relative text-[10px] uppercase tracking-[0.16em] text-white/30">
+        <p className="relative text-[10px] uppercase tracking-[0.16em] text-white/60">
           Uso pessoal · Dados persistentes · Acesso remoto futuro
         </p>
       </div>
@@ -102,7 +102,7 @@ export default async function AuthLayout({
               <p className="text-sm font-semibold text-slate-900">
                 FinanceiroApp
               </p>
-              <p className="text-[10px] uppercase tracking-[0.14em] text-slate-400">
+              <p className="text-[10px] uppercase tracking-[0.14em] text-slate-600">
                 Finanças pessoais
               </p>
             </div>

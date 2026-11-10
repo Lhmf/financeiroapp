@@ -45,14 +45,14 @@ function Brand() {
       href="/dashboard"
       className="flex items-center gap-2.5 border-b border-slate-100 px-5 py-5"
     >
-      <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-sm shadow-emerald-600/25">
+      <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-700 bg-gradient-to-br from-emerald-600 to-teal-700 text-white shadow-sm shadow-emerald-700/25">
         <Wallet className="h-5 w-5" />
       </span>
       <span className="leading-tight">
         <span className="block text-sm font-semibold tracking-tight text-slate-900">
           FinanceiroApp
         </span>
-        <span className="block text-[10px] font-medium uppercase tracking-[0.14em] text-slate-400">
+        <span className="block text-[10px] font-medium uppercase tracking-[0.14em] text-slate-600">
           Finanças pessoais
         </span>
       </span>
@@ -93,8 +93,8 @@ function NavLinks({
               className={cn(
                 "h-4.5 w-4.5 shrink-0",
                 active
-                  ? "text-emerald-600"
-                  : "text-slate-400 group-hover:text-slate-600",
+                  ? "text-emerald-700"
+                  : "text-slate-600 group-hover:text-slate-800",
               )}
             />
             {item.label}
@@ -127,14 +127,14 @@ function UserCard({
   return (
     <div className="border-t border-slate-100 p-3">
       <div className="flex items-center gap-2.5 rounded-xl p-2">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-slate-900 to-slate-700 text-xs font-semibold text-white">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-900 bg-gradient-to-br from-slate-900 to-slate-700 text-xs font-semibold text-white">
           {initials || "U"}
         </span>
         <div className="min-w-0 flex-1">
           <p className="truncate text-xs font-semibold text-slate-800">
             {user.name}
           </p>
-          <p className="truncate text-[11px] text-slate-400">{user.email}</p>
+          <p className="truncate text-[11px] text-slate-600">{user.email}</p>
         </div>
         <button
           type="button"
@@ -142,7 +142,7 @@ function UserCard({
           disabled={signingOut}
           title="Sair"
           aria-label="Sair"
-          className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition hover:bg-rose-50 hover:text-rose-600 disabled:opacity-50"
+          className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 transition hover:bg-rose-50 hover:text-rose-600 disabled:opacity-50"
         >
           <LogOut className="h-4 w-4" />
         </button>
@@ -175,13 +175,6 @@ export function AppShell({
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <a
-        href="#conteudo"
-        className="fixed left-4 top-4 z-[60] -translate-y-24 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-medium text-white shadow-lg transition-transform focus:translate-y-0"
-      >
-        Pular para o conteúdo
-      </a>
-
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-slate-200 bg-white lg:flex">
         <Brand />
         <NavLinks pathname={pathname} />
@@ -193,51 +186,48 @@ export function AppShell({
       </aside>
 
       {mobileOpen ? (
-        <button
-          type="button"
-          aria-label="Fechar menu"
-          className="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-sm lg:hidden"
-          onClick={() => setMobileOpen(false)}
-        />
-      ) : null}
-
-      <aside
-        id="mobile-menu"
-        aria-label="Menu de navegação"
-        inert={!mobileOpen}
-        className={cn(
-          "fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-slate-200 bg-white shadow-2xl transition-transform duration-200 lg:hidden",
-          mobileOpen ? "translate-x-0" : "-translate-x-full",
-        )}
-      >
-        <div className="flex items-center justify-between border-b border-slate-100 pr-3">
-          <Brand />
+        <>
           <button
             type="button"
             aria-label="Fechar menu"
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100"
+            className="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-sm lg:hidden"
             onClick={() => setMobileOpen(false)}
+          />
+          <aside
+            id="mobile-menu"
+            aria-label="Menu de navegação"
+            className="animate-drawer-in fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-slate-200 bg-white shadow-2xl lg:hidden"
           >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
-        <NavLinks
-          pathname={pathname}
-          onNavigate={() => setMobileOpen(false)}
-        />
-        <UserCard
-          user={user}
-          onSignOut={handleSignOut}
-          signingOut={signingOut}
-        />
-      </aside>
+            <div className="flex items-center justify-between border-b border-slate-100 pr-3">
+              <Brand />
+              <button
+                type="button"
+                aria-label="Fechar menu"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100"
+                onClick={() => setMobileOpen(false)}
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <NavLinks
+              pathname={pathname}
+              onNavigate={() => setMobileOpen(false)}
+            />
+            <UserCard
+              user={user}
+              onSignOut={handleSignOut}
+              signingOut={signingOut}
+            />
+          </aside>
+        </>
+      ) : null}
 
       <div className="lg:pl-64">
         <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-slate-200/80 bg-white/85 px-4 backdrop-blur sm:px-6 lg:px-8">
           <button
             type="button"
             aria-label="Abrir menu"
-            aria-controls="mobile-menu"
+            aria-controls={mobileOpen ? "mobile-menu" : undefined}
             aria-expanded={mobileOpen}
             className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 lg:hidden"
             onClick={() => setMobileOpen(true)}
@@ -248,13 +238,13 @@ export function AppShell({
             <p className="truncate text-sm font-semibold text-slate-900">
               {current.label}
             </p>
-            <p className="hidden text-[11px] text-slate-400 sm:block">
+            <p className="hidden text-[11px] text-slate-600 sm:block">
               Controle financeiro pessoal
             </p>
           </div>
           <Link
             href="/configuracoes"
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-slate-900 to-slate-700 text-xs font-semibold text-white ring-2 ring-white transition hover:from-slate-800 hover:to-slate-600"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 bg-gradient-to-br from-slate-900 to-slate-700 text-xs font-semibold text-white ring-2 ring-white transition hover:from-slate-800 hover:to-slate-600"
             title="Configurações"
             aria-label="Configurações"
           >
@@ -287,13 +277,13 @@ export function AppShell({
                   "flex flex-col items-center gap-0.5 pb-1.5 pt-1 text-[10px] font-medium transition-colors",
                   active
                     ? "text-emerald-700"
-                    : "text-slate-400 hover:text-slate-600",
+                    : "text-slate-600 hover:text-slate-800",
                 )}
               >
                 <span
                   className={cn(
                     "flex h-8 w-12 items-center justify-center rounded-xl transition-colors",
-                    active ? "bg-emerald-50 text-emerald-600" : "text-slate-400",
+                    active ? "bg-emerald-50 text-emerald-700" : "text-slate-600",
                   )}
                 >
                   <Icon className="h-5 w-5" />

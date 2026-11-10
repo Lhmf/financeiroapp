@@ -47,7 +47,7 @@ export default async function DebtDetailPage({
     <div className="animate-fade-up space-y-6">
       <Link
         href="/dividas"
-        className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-slate-800"
+        className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:text-slate-800"
       >
         <ArrowLeft className="h-3.5 w-3.5" />
         Voltar para dívidas
@@ -75,19 +75,19 @@ export default async function DebtDetailPage({
 
       <div className="grid gap-4 sm:grid-cols-3">
         <Card className="p-5">
-          <p className="text-xs font-medium text-slate-500">Valor inicial</p>
+          <p className="text-xs font-medium text-slate-600">Valor inicial</p>
           <p className="tabular mt-2 text-xl font-semibold text-slate-900">
             {formatCents(debt.initialAmountCents)}
           </p>
         </Card>
         <Card className="p-5">
-          <p className="text-xs font-medium text-slate-500">Já pago</p>
-          <p className="tabular mt-2 text-xl font-semibold text-emerald-600">
+          <p className="text-xs font-medium text-slate-600">Já pago</p>
+          <p className="tabular mt-2 text-xl font-semibold text-emerald-700">
             {formatCents(debt.paidCents)}
           </p>
         </Card>
         <Card className="p-5">
-          <p className="text-xs font-medium text-slate-500">Saldo devedor</p>
+          <p className="text-xs font-medium text-slate-600">Saldo devedor</p>
           <p className="tabular mt-2 text-xl font-semibold text-violet-700">
             {formatCents(debt.balanceCents)}
           </p>
@@ -96,7 +96,7 @@ export default async function DebtDetailPage({
 
       <Card className="p-5">
         <div className="flex items-center justify-between gap-3">
-          <p className="text-xs font-medium text-slate-500">Progresso</p>
+          <p className="text-xs font-medium text-slate-600">Progresso</p>
           <Badge tone={isPaid ? "green" : "amber"}>
             {DEBT_STATUS_LABELS[debt.status]}
           </Badge>
@@ -107,7 +107,7 @@ export default async function DebtDetailPage({
             style={{ width: `${Math.max(3, debt.progress)}%` }}
           />
         </div>
-        <p className="mt-1 text-right text-[10px] text-slate-400">
+        <p className="mt-1 text-right text-[10px] text-slate-600">
           {debt.progress}% pago
         </p>
       </Card>
@@ -118,7 +118,7 @@ export default async function DebtDetailPage({
             <CardHeader>
               <div>
                 <CardTitle>Histórico de pagamentos</CardTitle>
-                <p className="mt-0.5 text-xs text-slate-500">
+                <p className="mt-0.5 text-xs text-slate-600">
                   Cada pagamento reduz o saldo devedor.
                 </p>
               </div>
@@ -142,14 +142,14 @@ export default async function DebtDetailPage({
                     className="flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center"
                   >
                     <div className="flex min-w-0 flex-1 items-start gap-3">
-                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
                         <CheckCircle2 className="h-4 w-4" />
                       </span>
                       <div className="min-w-0">
                         <p className="text-sm font-medium text-slate-800">
                           Pagamento em {formatDate(payment.paidAt)}
                         </p>
-                        <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 text-[11px] text-slate-400">
+                        <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 text-[11px] text-slate-600">
                           <CalendarDays className="h-3 w-3" />
                           {payment.financialAccount?.name ??
                             "Conta não informada"}
@@ -170,7 +170,7 @@ export default async function DebtDetailPage({
                     </div>
 
                     <div className="flex items-center justify-between gap-2 sm:justify-end">
-                      <p className="tabular text-sm font-semibold text-emerald-600">
+                      <p className="tabular text-sm font-semibold text-emerald-700">
                         −{formatCents(payment.amountCents)}
                       </p>
                       <form action={deleteDebtPayment}>
@@ -180,7 +180,7 @@ export default async function DebtDetailPage({
                           variant="ghost"
                           pendingLabel="Excluindo..."
                           confirmMessage="Excluir este pagamento? A despesa vinculada também será removida."
-                          className="text-rose-500 hover:bg-rose-50 hover:text-rose-700"
+                          className="text-rose-600 hover:bg-rose-50 hover:text-rose-700"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
                           Excluir
@@ -198,7 +198,7 @@ export default async function DebtDetailPage({
               <CardTitle>Zona de risco</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-xs leading-relaxed text-slate-500">
+              <p className="text-xs leading-relaxed text-slate-600">
                 Excluir a dívida remove também o histórico de pagamentos. As
                 despesas vinculadas permanecem no fluxo de caixa, pois
                 representam dinheiro que realmente saiu.
@@ -225,7 +225,7 @@ export default async function DebtDetailPage({
               <CardHeader>
                 <div>
                   <CardTitle>Registrar pagamento</CardTitle>
-                  <p className="mt-0.5 text-xs text-slate-500">
+                  <p className="mt-0.5 text-xs text-slate-600">
                     O saldo devedor é atualizado automaticamente.
                   </p>
                 </div>
@@ -249,7 +249,7 @@ export default async function DebtDetailPage({
             <CardHeader>
               <CardTitle>Como funciona</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2 text-[11px] leading-relaxed text-slate-500">
+            <CardContent className="space-y-2 text-[11px] leading-relaxed text-slate-600">
               <p>
                 Ao registrar um pagamento, o app cria uma despesa paga
                 vinculada e reduz o saldo devedor.

@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { AppShell } from "@/components/layout/app-shell";
+import { SkipLink } from "@/components/layout/skip-link";
 import { requireUser } from "@/lib/session";
 import { ensureDefaultCategories } from "@/services/categories";
 
@@ -10,8 +11,11 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
   await ensureDefaultCategories(user.id);
 
   return (
-    <AppShell user={{ name: user.name, email: user.email }}>
-      {children}
-    </AppShell>
+    <>
+      <SkipLink />
+      <AppShell user={{ name: user.name, email: user.email }}>
+        {children}
+      </AppShell>
+    </>
   );
 }

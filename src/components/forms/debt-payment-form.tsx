@@ -131,13 +131,13 @@ export function DebtPaymentForm({
           name="createExpense"
           checked={createExpense}
           onChange={(event) => setCreateExpense(event.target.checked)}
-          className="mt-0.5 h-4 w-4 rounded border-slate-300 text-emerald-600 accent-emerald-600"
+          className="mt-0.5 h-4 w-4 rounded border-slate-300 text-emerald-700 accent-emerald-600"
         />
         <span>
           <span className="block text-xs font-medium text-slate-800">
             Registrar também como despesa paga
           </span>
-          <span className="mt-0.5 block text-[11px] leading-relaxed text-slate-500">
+          <span className="mt-0.5 block text-[11px] leading-relaxed text-slate-600">
             Recomendado. O pagamento entra no fluxo de caixa uma única vez,
             vinculado a esta dívida.
           </span>

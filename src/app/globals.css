@@ -1,7 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  color-scheme: light;
+  /* "only light" também impede o modo escuro automático do navegador. */
+  color-scheme: only light;
 }
 
 html {
@@ -65,6 +66,21 @@ body {
 
 .animate-fade-up {
   animation: fade-up 0.25s ease-out both;
+}
+
+@keyframes drawer-in {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-drawer-in {
+  animation: drawer-in 0.2s ease-out both;
 }
 
 @media (prefers-reduced-motion: reduce) {

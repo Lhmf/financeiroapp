@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 type Tone = "emerald" | "rose" | "amber" | "sky" | "violet" | "slate";
 
 const toneClasses: Record<Tone, string> = {
-  emerald: "bg-emerald-50 text-emerald-600",
+  emerald: "bg-emerald-50 text-emerald-700",
   rose: "bg-rose-50 text-rose-600",
   amber: "bg-amber-50 text-amber-600",
   sky: "bg-sky-50 text-sky-600",
@@ -36,14 +36,14 @@ export function StatCard({
       )}
     >
       <div className="min-w-0">
-        <p className="text-[10px] font-medium text-slate-500 sm:text-[11px]">
+        <p className="text-[10px] font-medium text-slate-600 sm:text-[11px]">
           {label}
         </p>
         <p className="tabular mt-1 text-base font-semibold tracking-tight text-slate-900 sm:text-lg">
           {value}
         </p>
         {hint ? (
-          <p className="mt-0.5 text-[9px] text-slate-400 sm:text-[10px]">
+          <p className="mt-0.5 text-[10px] text-slate-600 sm:text-[11px]">
             {hint}
           </p>
         ) : null}

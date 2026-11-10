@@ -30,7 +30,7 @@ export default async function DashboardPage({
     <div className="animate-fade-up space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-emerald-600">
+          <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-emerald-700">
             Visão geral
           </p>
           <h1 className="mt-1 text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl">
@@ -69,7 +69,7 @@ export default async function DashboardPage({
             <CardHeader>
               <div>
                 <CardTitle>Evolução financeira</CardTitle>
-                <p className="mt-0.5 text-xs text-slate-500">
+                <p className="mt-0.5 text-xs text-slate-600">
                   Receitas recebidas e despesas pagas nos últimos 6 meses
                 </p>
               </div>
@@ -136,7 +136,7 @@ export default async function DashboardPage({
             <CardHeader>
               <div>
                 <CardTitle>Despesas por categoria</CardTitle>
-                <p className="mt-0.5 text-xs text-slate-500">
+                <p className="mt-0.5 text-xs text-slate-600">
                   Somente despesas pagas no mês
                 </p>
               </div>

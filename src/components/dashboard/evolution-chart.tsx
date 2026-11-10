@@ -27,7 +27,7 @@ export function EvolutionChart({
 
   return (
     <div>
-      <div className="mb-3 flex flex-wrap items-center gap-4 text-[11px] font-medium text-slate-500">
+      <div className="mb-3 flex flex-wrap items-center gap-4 text-[11px] font-medium text-slate-600">
         <span className="inline-flex items-center gap-1.5">
           <span aria-hidden className="h-2 w-2 rounded-full bg-emerald-500" />
           Receitas
@@ -36,7 +36,7 @@ export function EvolutionChart({
           <span aria-hidden className="h-2 w-2 rounded-full bg-rose-500" />
           Despesas
         </span>
-        <span className="ml-auto hidden text-[10px] font-normal text-slate-400 sm:inline">
+        <span className="ml-auto hidden text-[10px] font-normal text-slate-600 sm:inline">
           Valores realizados
         </span>
       </div>
@@ -68,13 +68,13 @@ export function EvolutionChart({
                 dataKey="month"
                 tickLine={false}
                 axisLine={false}
-                tick={{ fontSize: 11, fill: "#94a3b8" }}
+                tick={{ fontSize: 11, fill: "#64748b" }}
                 dy={8}
               />
               <YAxis
                 tickLine={false}
                 axisLine={false}
-                tick={{ fontSize: 11, fill: "#94a3b8" }}
+                tick={{ fontSize: 11, fill: "#64748b" }}
                 width={64}
                 tickFormatter={(value) =>
                   formatCentsCompact(Number(value) * 100)
@@ -123,7 +123,7 @@ export function EvolutionChart({
             <p className="text-sm font-medium text-slate-700">
               Ainda não há movimentações
             </p>
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="mt-1 text-xs text-slate-600">
               Receitas recebidas e despesas pagas aparecem aqui.
             </p>
           </div>

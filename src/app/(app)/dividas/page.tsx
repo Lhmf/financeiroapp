@@ -35,38 +35,41 @@ export default async function DebtsPage() {
       />
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <Card className="relative overflow-hidden border-violet-500/20 bg-gradient-to-br from-violet-600 via-violet-600 to-fuchsia-700 p-5 text-white shadow-lg shadow-violet-900/10">
+        <Card
+          className="relative overflow-hidden border-violet-500/20 bg-gradient-to-br from-violet-600 via-violet-600 to-fuchsia-700 p-5 text-white shadow-lg shadow-violet-900/10"
+          style={{ backgroundColor: "#7c3aed" }}
+        >
           <span
             aria-hidden
             className="pointer-events-none absolute -right-8 -top-10 h-32 w-32 rounded-full bg-white/10 blur-2xl"
           />
           <div className="relative">
-            <p className="text-xs font-medium text-violet-50/80">
+            <p className="text-xs font-medium text-white">
               Total devedor
             </p>
             <p className="tabular mt-2 text-2xl font-semibold text-white">
               {formatCents(totalDebt)}
             </p>
-            <p className="mt-1 text-[11px] text-violet-50/60">
+            <p className="mt-1 text-[11px] text-violet-50">
               Somente dívidas ativas
             </p>
           </div>
         </Card>
         <Card className="p-5">
-          <p className="text-xs font-medium text-slate-500">Dívidas ativas</p>
+          <p className="text-xs font-medium text-slate-600">Dívidas ativas</p>
           <p className="tabular mt-2 text-2xl font-semibold text-slate-900">
             {active.length}
           </p>
-          <p className="mt-1 text-[11px] text-slate-400">
+          <p className="mt-1 text-[11px] text-slate-600">
             Em acompanhamento
           </p>
         </Card>
         <Card className="p-5">
-          <p className="text-xs font-medium text-slate-500">Quitadas</p>
+          <p className="text-xs font-medium text-slate-600">Quitadas</p>
           <p className="tabular mt-2 text-2xl font-semibold text-emerald-700">
             {paid.length}
           </p>
-          <p className="mt-1 text-[11px] text-slate-400">
+          <p className="mt-1 text-[11px] text-slate-600">
             Histórico concluído
           </p>
         </Card>
@@ -111,7 +114,7 @@ export default async function DebtsPage() {
                             {DEBT_TYPE_LABELS[debt.type]}
                           </Badge>
                         </div>
-                        <p className="mt-1 text-[11px] text-slate-400">
+                        <p className="mt-1 text-[11px] text-slate-600">
                           {debt.creditor || "Credor não informado"}
                           {debt.dueDay ? ` · vence dia ${debt.dueDay}` : ""}
                         </p>
@@ -123,7 +126,7 @@ export default async function DebtsPage() {
 
                     <div className="mt-4 flex items-end justify-between gap-3">
                       <div>
-                        <p className="text-[10px] font-medium uppercase tracking-wide text-slate-400">
+                        <p className="text-[10px] font-medium uppercase tracking-wide text-slate-600">
                           Saldo devedor
                         </p>
                         <p className="tabular text-lg font-semibold text-slate-900">
@@ -131,10 +134,10 @@ export default async function DebtsPage() {
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="text-[10px] font-medium uppercase tracking-wide text-slate-400">
+                        <p className="text-[10px] font-medium uppercase tracking-wide text-slate-600">
                           Já pago
                         </p>
-                        <p className="tabular text-sm font-medium text-emerald-600">
+                        <p className="tabular text-sm font-medium text-emerald-700">
                           {formatCents(debt.paidCents)}
                         </p>
                       </div>
@@ -146,7 +149,7 @@ export default async function DebtsPage() {
                         style={{ width: `${Math.max(3, debt.progress)}%` }}
                       />
                     </div>
-                    <div className="mt-1 flex justify-between text-[10px] text-slate-400">
+                    <div className="mt-1 flex justify-between text-[10px] text-slate-600">
                       <span>{debt.progress}% pago</span>
                       <span>Inicial: {formatCents(debt.initialAmountCents)}</span>
                     </div>
@@ -154,7 +157,7 @@ export default async function DebtsPage() {
                     <div className="mt-4 flex items-center justify-end gap-2 border-t border-slate-100 pt-3">
                       <Link
                         href={`/dividas/${debt.id}/editar`}
-                        className="inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
+                        className="inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-800"
                       >
                         <Pencil className="h-3.5 w-3.5" />
                         Editar
@@ -188,7 +191,7 @@ export default async function DebtsPage() {
                         >
                           {debt.name}
                         </Link>
-                        <p className="text-[11px] text-slate-400">
+                        <p className="text-[11px] text-slate-600">
                           {debt.creditor || "Credor não informado"} ·{" "}
                           {formatCents(debt.initialAmountCents)} pagos
                         </p>

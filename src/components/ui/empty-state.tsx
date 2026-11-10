@@ -22,13 +22,13 @@ export function EmptyState({
       )}
     >
       {icon ? (
-        <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-slate-400 shadow-sm ring-1 ring-slate-200">
+        <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-slate-500 shadow-sm ring-1 ring-slate-200">
           {icon}
         </div>
       ) : null}
       <p className="text-sm font-semibold text-slate-800">{title}</p>
       {description ? (
-        <p className="mt-1 max-w-sm text-xs leading-relaxed text-slate-500">
+        <p className="mt-1 max-w-sm text-xs leading-relaxed text-slate-600">
           {description}
         </p>
       ) : null}
