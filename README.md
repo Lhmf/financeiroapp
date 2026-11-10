@@ -2,7 +2,7 @@
 
 Sistema pessoal de controle financeiro multiusuário, com dashboard, receitas, despesas, dívidas e contas. O app separa **dinheiro realizado** de **valores previstos** e impede que o pagamento de uma dívida seja contado duas vezes no caixa.
 
-> **Status:** código do MVP implementado e compilando. A conexão real com o Neon, as migrações, o seed e a validação manual ainda estão pendentes. Veja [Estado atual](#estado-atual).
+> **Status:** MVP implementado e validado contra um banco Neon de desenvolvimento. Migração e seed aplicados. O projeto Neon é claimable e precisa ser reivindicado antes de **2026-11-13T16:15:55Z** para não expirar. Veja [Estado atual](#estado-atual).
 
 ## Funcionalidades
 
@@ -47,8 +47,10 @@ Detalhes completos em [docs/04-regras-financeiras.md](./docs/04-regras-financeir
 ## Requisitos
 
 - Node.js 20+ (testado com 24.15.0)
-- Conta no Neon
+- Conta no Neon para o banco definitivo
 - Git
+
+> Para desenvolvimento, o projeto pode usar um banco **Claimable Neon** sem conta. Ele expira em 72 horas se não for reivindicado. O banco atual está nesse modo.
 
 ## Começando
 
@@ -60,10 +62,10 @@ npm install
 copy .env.example .env   # Windows
 # cp .env.example .env   # Linux/macOS
 
-# 3. Preencher DATABASE_URL, BETTER_AUTH_SECRET e BETTER_AUTH_URL
+# 3. Preencher DATABASE_URL, DATABASE_URL_UNPOOLED, BETTER_AUTH_SECRET e BETTER_AUTH_URL
 
-# 4. Criar as tabelas
-npx prisma migrate dev --name init
+# 4. Aplicar as migrations existentes
+npx prisma migrate dev
 
 # 5. Popular dados de demonstração (opcional)
 npm run db:seed
@@ -84,10 +86,17 @@ Acesse [http://localhost:3000](http://localhost:3000).
 ## Variáveis de ambiente
 
 ```env
-DATABASE_URL="postgresql://usuario:senha@host-pooler.neon.tech/neondb?sslmode=require"
+# Aplicação (pooled)
+DATABASE_URL="postgresql://usuario:senha@host-pooler.neon.tech/neondb?sslmode=verify-full"
+
+# Migrações e inspeção (direct). O prisma7.config.ts usa esta URL quando existe.
+DATABASE_URL_UNPOOLED="postgresql://usuario:senha@host.neon.tech/neondb?sslmode=verify-full"
+
 BETTER_AUTH_SECRET="segredo-aleatorio-de-32-bytes"
 BETTER_AUTH_URL="http://localhost:3000"
 ```
+
+`sslmode=verify-full` valida o certificado do servidor e evita o aviso de mudança futura do driver `pg`. Se o provedor só fornecer `sslmode=require`, a aplicação funciona, mas o aviso pode aparecer.
 
 Gere o segredo com:
 
@@ -108,13 +117,23 @@ Nunca comite o `.env`.
 | `npx tsc --noEmit` | Checagem de tipos |
 | `npm test` | Testes unitários |
 | `npm run test:watch` | Testes em watch |
-| `npm run test:e2e` | Playwright |
+| `npm run test:e2e` | Playwright (smoke sem banco) |
+| `E2E_WITH_DB=1 npm run test:e2e` | Playwright + teste completo com banco/seed |
 | `npm run db:generate` | Gerar Prisma Client |
 | `npm run db:migrate` | Criar/aplicar migration em dev |
 | `npm run db:deploy` | Aplicar migrations em produção |
 | `npm run db:push` | Sincronizar schema sem migration |
 | `npm run db:studio` | Prisma Studio |
 | `npm run db:seed` | Seed demonstrativo |
+
+No PowerShell, defina a variável antes:
+
+```powershell
+$env:E2E_WITH_DB="1"
+npm run test:e2e
+```
+
+O teste com banco cria dados temporários com nomes únicos, valida CRUD, persistência, filtros, dívidas e arquivamento de conta, e remove o que criou. Ele usa o usuário demo do seed e **não deve ser rodado contra dados reais**. O isolamento entre usuários foi validado separadamente com um segundo usuário temporário.
 
 ## Estrutura
 
@@ -156,23 +175,36 @@ Instruções para agentes de IA: [AGENTS.md](./AGENTS.md).
 
 ## Estado atual
 
-Implementado e verificado:
+Implementado e verificado contra um banco Neon real (claimable, região `aws-sa-east-1`):
 
 - `npm run build` passando.
 - `npm run lint` sem erros.
 - `npx tsc --noEmit` sem erros.
-- `npm test` com 30 testes passando.
-- `npm run test:e2e` com 2 testes passando.
-- Páginas e ações do MVP criadas.
+- `npm test` com **34 testes** passando.
+- `npm run test:e2e` com 2 testes de autenticação passando.
+- `E2E_WITH_DB=1 npx playwright test tests/e2e/mvp.spec.ts` com o fluxo completo passando.
+- Migration `20261110161632_init` aplicada.
+- Seed demo aplicado; login `demo@financeiro.local` / `demo12345` validado.
+- Dashboard real conferido: saldo total de **R$ 17.417,00**, receitas recebidas de **R$ 6.590,00**, despesas pagas de **R$ 3.973,00** e resultado de **R$ 2.617,00** no mês.
+- Pagamento de dívida com despesa vinculada não é contado duas vezes; a despesa e o pagamento têm o mesmo valor e a conta não sofre dupla saída.
+- Isolamento validado com um segundo usuário: dashboard vazio e acesso direto a IDs do demo não exibiu dados nem formulários.
+- Exportação JSON, categorias e configurações revisadas no código; a validação manual restante está em [docs/07-testes-e-qualidade.md](./docs/07-testes-e-qualidade.md).
+
+Banco de desenvolvimento atual:
+
+- Projeto claimable `flat-queen-78874900`.
+- Branch `br-withered-cloud-b6336hbc`.
+- Expira em **2026-11-13T16:15:55Z** se não for reivindicado.
+- Após o claim, as URLs de conexão podem mudar; atualize `DATABASE_URL` e `DATABASE_URL_UNPOOLED`.
+- O link/código de claim não é armazenado no repositório.
 
 Pendente:
 
-- Substituir a `DATABASE_URL` de exemplo pela connection string real do Neon.
-- Rodar `prisma migrate dev --name init`.
-- Rodar `npm run db:seed`.
-- Validar manualmente os 11 critérios de aceite.
-- Inicializar o Git e criar o primeiro commit.
-- Publicar na Vercel (somente com autorização explícita).
+- Reivindicar o projeto Neon antes do vencimento e conferir as novas credenciais.
+- Completar os itens manuais ainda abertos em `docs/07-testes-e-qualidade.md` (alguns fluxos de edição, status e backup).
+- Configurar backup/PITR depois do claim.
+- Publicar na Vercel somente com autorização explícita.
+- Configurar CI com lint, tipos, unitários e build.
 
 ## Segurança
 

@@ -24,11 +24,29 @@ O `postinstall` executa `prisma generate` e cria o client em `src/generated/pris
 
 ## 3. Criar o banco no Neon
 
+### Opção A — projeto próprio
+
 1. Acesse o painel do Neon.
 2. Crie um projeto (região mais próxima, por exemplo `us-east-1` ou `sa-east-1` se disponível).
 3. Copie a **connection string pooled** (Pooled connection). Ela costuma ter `-pooler` no host.
-4. Copie também a **direct connection** para migrações, se o provedor exigir.
+4. Copie também a **direct connection** para migrações.
 5. Guarde a senha; ela não é exibida novamente.
+
+### Opção B — Claimable Neon (agente/desenvolvimento)
+
+Para um banco temporário sem conta, use o CLI oficial:
+
+```bash
+npx --yes neon@latest claim create --project-name financeiroapp --region-id aws-sa-east-1
+```
+
+Ele grava `DATABASE_URL` e `DATABASE_URL_UNPOOLED` no `.env` e mostra o projeto, a região e a data de expiração. O projeto dura **72 horas** até ser reivindicado, com limites de armazenamento e transferência. Gere o link de claim com:
+
+```bash
+npx --yes neon@latest claim accept --open=false
+```
+
+O código de claim expira em **15 minutos**; o projeto expira em **72 horas**. Depois do claim, as credenciais podem mudar.
 
 ### Pooled × direct
 
@@ -40,7 +58,7 @@ O `postinstall` executa `prisma generate` e cria o client em `src/generated/pris
 
 O Prisma 7 usa o driver `pg` via `@prisma/adapter-pg`. O adapter aceita a URL pooled.
 
-> Se a URL pooled tiver parâmetros incompatíveis com migrações, use a direct apenas no comando de migração, definindo `DATABASE_URL` temporariamente.
+> O `prisma7.config.ts` usa `DATABASE_URL_UNPOOLED` quando ela existe. Assim, migrações, `db push`, `db studio` e `migrate reset` usam a conexão direta automaticamente; a aplicação continua com a pooled.
 
 ## 4. Configurar o `.env`
 
@@ -53,7 +71,8 @@ Copy-Item .env.example .env
 Edite `.env`:
 
 ```env
-DATABASE_URL="postgresql://usuario:senha@ep-xxxx-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require"
+DATABASE_URL="postgresql://usuario:senha@ep-xxxx-pooler.us-east-2.aws.neon.tech/neondb?sslmode=verify-full"
+DATABASE_URL_UNPOOLED="postgresql://usuario:senha@ep-xxxx.us-east-2.aws.neon.tech/neondb?sslmode=verify-full"
 BETTER_AUTH_SECRET="cole-um-segredo-aleatorio"
 BETTER_AUTH_URL="http://localhost:3000"
 ```
@@ -66,20 +85,21 @@ node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 
 ### Atenção
 
-- O `.env` atual do projeto contém uma URL de exemplo. **Substitua pela URL real.**
+- O `.env` atual do projeto aponta para um banco claimable de desenvolvimento. **Reivindique o projeto antes de 2026-11-13T16:15:55Z** e atualize as URLs se elas mudarem.
 - Não comite `.env`.
 - Não reutilize o segredo de desenvolvimento em produção.
-- O banco precisa aceitar SSL (`sslmode=require`).
+- Prefira `sslmode=verify-full`. Se o provedor só oferecer `sslmode=require`, o app funciona, mas o driver `pg` pode avisar sobre mudança futura.
+- O banco precisa aceitar SSL.
 
 ## 5. Aplicar migrações
 
 Com o banco vazio:
 
 ```bash
-npx prisma migrate dev --name init
+npx prisma migrate dev
 ```
 
-Isso cria as tabelas e o histórico em `prisma/migrations`.
+Isso cria as tabelas e o histórico em `prisma/migrations`. O comando usa `DATABASE_URL_UNPOOLED` automaticamente quando configurada.
 
 ### Alternativa rápida (apenas protótipo)
 
@@ -185,9 +205,10 @@ Se conectar, mostra o status das migrações. Se falhar, confira:
 
 - URL copiada por completo;
 - senha correta;
-- `sslmode=require`;
+- `sslmode=verify-full` (ou `require` se o provedor exigir);
 - IP allow list do Neon (se habilitada);
-- projeto Neon ativo (o free tier pode suspender por inatividade).
+- projeto Neon ativo (o free tier pode suspender por inatividade);
+- se o projeto for claimable, se ele ainda não expirou e se o claim foi concluído.
 
 ## 11. Testar o app
 
@@ -210,6 +231,7 @@ Se conectar, mostra o status das migrações. Se falhar, confira:
 2. Importe o projeto na Vercel.
 3. Configure as variáveis de ambiente:
    - `DATABASE_URL` (pooled, produção);
+   - `DATABASE_URL_UNPOOLED` (direct, para migrações; opcional se o provedor não fornecer);
    - `BETTER_AUTH_SECRET` (novo);
    - `BETTER_AUTH_URL` (URL HTTPS da Vercel).
 4. Rode `npm run db:deploy` apontando para o banco de produção (localmente ou em um job).
@@ -234,7 +256,7 @@ Nunca rode `db:seed` em produção sem intenção; ele cria um usuário demo.
 ### “Can't reach database server”
 
 - URL incorreta ou banco suspenso.
-- Falta `sslmode=require`.
+- Falta `sslmode=verify-full` (ou `sslmode=require`, se o provedor exigir).
 - IP allow list bloqueando.
 - Use a URL direct para testar.
 
@@ -280,7 +302,7 @@ Com cuidado, em desenvolvimento:
 npx prisma migrate reset
 ```
 
-Isso apaga o banco e reaplica migrações + seed. **Nunca use em produção.**
+Isso apaga o banco e reaplica migrações + seed. **Nunca use em produção.** O comando usa `DATABASE_URL_UNPOOLED` quando configurada. Agentes de IA precisam de consentimento explícito antes de executar essa ação destrutiva.
 
 ## 15. Referências
 

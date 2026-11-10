@@ -16,7 +16,7 @@
 
 **Motivo:** o app será publicado na Vercel; SQLite local não serve em serverless. Evita diferenças de dialeto e retrabalho.
 
-**Consequência:** o desenvolvimento depende de conexão com o Neon; migrations e seed precisam de banco real.
+**Consequência:** o desenvolvimento depende de conexão com o Neon; migrations e seed precisam de banco real. Para a validação inicial, um projeto **Claimable Neon** temporário foi usado sem conta.
 
 ### D03 — Better Auth self-managed
 
@@ -122,6 +122,22 @@
 
 **Consequência:** testes de integração precisam de um banco de teste (Neon branch ou PostgreSQL local).
 
+### D16 — Claimable Neon no desenvolvimento
+
+**Decisão:** validar o MVP contra um projeto **Claimable Neon** criado sem conta, reivindicando-o antes do vencimento.
+
+**Motivo:** permite testar migrações, seed e E2E em PostgreSQL real sem criar uma conta imediatamente.
+
+**Consequência:** o projeto `flat-queen-78874900` expira em **2026-11-13T16:15:55Z** se não for reivindicado. Depois do claim, as URLs podem mudar e o `.env` deve ser atualizado. Esse banco é só de desenvolvimento; não é produção.
+
+### D17 — Conexão direta para migrações
+
+**Decisão:** usar `DATABASE_URL_UNPOOLED` (direct) no `prisma7.config.ts` quando disponível; o runtime continua com a pooled.
+
+**Motivo:** evitar limitações de PgBouncer em migrações e inspeção.
+
+**Consequência:** a Vercel deve ter as duas variáveis (ou apenas a pooled, usando o fallback) e os comandos de migração passam a usar a conexão direta automaticamente.
+
 ## Roadmap
 
 ### Fase 0 — Fundação (concluída no código)
@@ -136,18 +152,21 @@
 - [x] Testes unitários e smoke E2E.
 - [x] Documentação em português.
 
-### Fase 1 — Validação real (próxima)
+### Fase 1 — Validação real (concluída parcialmente em 10/11/2026)
 
-- [ ] Conectar o Neon.
-- [ ] Rodar `prisma migrate dev --name init`.
-- [ ] Rodar o seed.
-- [ ] Validar os 11 critérios de aceite manualmente.
-- [ ] Corrigir bugs encontrados.
-- [ ] Criar o primeiro commit no Git.
+- [x] Conectar ao Neon claimable.
+- [x] Rodar a migration `20261110161632_init`.
+- [x] Rodar o seed demo.
+- [x] Validar os principais critérios de aceite com E2E e verificação manual.
+- [x] Corrigir bugs encontrados (`paymentMethod` vazio, seletor de exclusão, página de recurso não encontrado).
+- [x] Criar commits pequenos no Git.
+- [ ] Reivindicar o projeto Neon antes de 2026-11-13T16:15:55Z.
+- [ ] Completar o checklist manual restante.
 - [ ] Configurar CI (lint, tipos, testes, build).
 
 ### Fase 2 — Publicação
 
+- [ ] Reivindicar o projeto Neon e atualizar as credenciais.
 - [ ] Criar repositório remoto.
 - [ ] Configurar variáveis na Vercel.
 - [ ] `prisma migrate deploy` em produção.
@@ -183,13 +202,12 @@
 
 ## Próximos passos imediatos
 
-1. Obter a connection string real do Neon.
-2. Atualizar `.env`.
-3. Rodar `prisma migrate dev --name init`.
-4. Rodar `npm run db:seed`.
-5. Subir o app e validar o checklist de [07 — Testes e qualidade](./07-testes-e-qualidade.md).
-6. Inicializar o Git e fazer commits pequenos.
-7. Só depois avaliar publicação.
+1. Reivindicar o projeto Neon claimable antes de **2026-11-13T16:15:55Z** e gerar um novo link se o código expirar.
+2. Se as URLs mudarem, atualizar `DATABASE_URL` e `DATABASE_URL_UNPOOLED` e rodar `npx prisma migrate status`.
+3. Completar os itens manuais pendentes de [07 — Testes e qualidade](./07-testes-e-qualidade.md).
+4. Configurar CI com uma branch Neon efêmera.
+5. Configurar backup/PITR depois do claim.
+6. Só depois avaliar publicação, com autorização explícita.
 
 ## Questões abertas
 
@@ -204,16 +222,18 @@
 
 ## Definition of Done do MVP
 
-- [ ] App conecta ao Neon real.
-- [ ] Migrações aplicadas.
-- [ ] Cadastro/login/logout funcionando.
-- [ ] CRUD de receitas e despesas funcionando e persistindo.
-- [ ] Dívidas e pagamentos funcionando.
-- [ ] Regra de não duplicação validada.
-- [ ] Filtros e histórico funcionando.
-- [ ] Isolamento entre usuários validado.
-- [ ] Exportação JSON funcionando.
-- [ ] `lint`, `tsc`, `test` e `build` passando.
-- [ ] Documentação atualizada.
-- [ ] Git com histórico limpo.
+- [x] App conecta ao Neon real.
+- [x] Migrações aplicadas.
+- [x] Cadastro/login/logout funcionando.
+- [x] CRUD de receitas e despesas funcionando e persistindo.
+- [x] Dívidas e pagamentos funcionando.
+- [x] Regra de não duplicação validada.
+- [x] Filtros e histórico básicos funcionando.
+- [x] Isolamento entre usuários validado.
+- [ ] Exportação JSON testada manualmente.
+- [x] `lint`, `tsc`, `test` e `build` passando.
+- [x] Documentação atualizada.
+- [x] Git com histórico de commits pequenos.
 - [ ] Publicação autorizada e testada (fase futura).
+
+> Pendências imediatas: reivindicar o projeto Neon até **2026-11-13T16:15:55Z**, completar o checklist manual e testar a exportação JSON.
