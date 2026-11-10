@@ -122,9 +122,9 @@ Mantenha o README e o AGENTS.md coerentes.
 
 ## Estado conhecido
 
-- O `.env` local aponta para um banco **Neon claimable de desenvolvimento**; a `DATABASE_URL` pooled é usada pelo app e a `DIRECT_URL` (ou `DATABASE_URL_UNPOOLED`, por compatibilidade) pelas migrações.
+- O `.env` local aponta para um banco **Neon de desenvolvimento reivindicado**; a `DATABASE_URL` pooled é usada pelo app e a `DIRECT_URL` (ou `DATABASE_URL_UNPOOLED`, por compatibilidade) pelas migrações.
 - A migration `20261110161632_init` foi aplicada e o seed demo foi executado contra esse banco.
-- O projeto Neon `flat-queen-78874900` precisa ser reivindicado até **2026-11-13T16:15:55Z**; depois do claim, as URLs podem mudar.
+- O projeto Neon `flat-queen-78874900` foi reivindicado em 10/11/2026 e as conexões pooled/direta foram atualizadas. O banco continua sendo de desenvolvimento, não produção.
 - O seed demo é `demo@financeiro.local` / `demo12345`.
 - O MVP ainda não foi publicado.
 - `npm audit` reportou vulnerabilidades moderadas não tratadas; avalie antes de produção.

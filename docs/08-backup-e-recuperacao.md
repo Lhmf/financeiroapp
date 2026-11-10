@@ -75,7 +75,7 @@ O Neon oferece recursos de recuperação conforme o plano:
 
 > Verifique no painel do Neon a janela de retenção do seu plano. Não presuma um período específico; documente o que está contratado.
 
-> **Atenção:** o projeto claimable usado no desenvolvimento não é um backup. Ele expira em **2026-11-13T16:15:55Z** se não for reivindicado e não tem retenção contratada. Reivindique o projeto e configure backup/PITR antes de usar dados reais.
+> **Atenção:** o projeto Neon de desenvolvimento foi reivindicado, mas continua não sendo um backup de produção e não tem retenção contratada. Configure backup/PITR antes de usar dados reais.
 
 ### Boas práticas
 

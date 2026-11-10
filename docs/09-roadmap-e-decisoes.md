@@ -128,7 +128,7 @@
 
 **Motivo:** permite testar migrações, seed e E2E em PostgreSQL real sem criar uma conta imediatamente.
 
-**Consequência:** o projeto `flat-queen-78874900` expira em **2026-11-13T16:15:55Z** se não for reivindicado. Depois do claim, as URLs podem mudar e o `.env` deve ser atualizado. Esse banco é só de desenvolvimento; não é produção.
+**Consequência:** o projeto `flat-queen-78874900` foi reivindicado em 10/11/2026. As novas conexões pooled e direta foram aplicadas ao `.env`, e as migrações passaram a rodar pela conexão direta. Esse banco é só de desenvolvimento; não é produção.
 
 ### D17 — Conexão direta para migrações
 
@@ -137,6 +137,14 @@
 **Motivo:** evitar limitações de PgBouncer em migrações e inspeção.
 
 **Consequência:** a Vercel deve ter as duas variáveis (ou apenas a pooled, usando o fallback) e os comandos de migração passam a usar a conexão direta automaticamente.
+
+### D18 — Passe de UI/UX incremental
+
+**Decisão:** evoluir a interface em camadas, sem alterar schema, regras financeiras, autenticação ou isolamento.
+
+**Motivo:** melhorar hierarquia visual, leitura dos números, responsividade e acessibilidade sem aumentar o risco da migração estrutural pendente.
+
+**Consequência:** o dashboard ganhou destaque para o saldo e resumo de contas em grade; receitas e despesas mostram totais do período filtrado; contas usam ícones por tipo; a navegação recebeu `aria-current`, skip link e tratamento de safe area no mobile. A migração para UUID/Decimal/Transaction continua uma decisão separada.
 
 ## Roadmap
 
@@ -160,7 +168,7 @@
 - [x] Validar os principais critérios de aceite com E2E e verificação manual.
 - [x] Corrigir bugs encontrados (`paymentMethod` vazio, seletor de exclusão, página de recurso não encontrado).
 - [x] Criar commits pequenos no Git.
-- [ ] Reivindicar o projeto Neon antes de 2026-11-13T16:15:55Z.
+- [x] Reivindicar o projeto Neon e atualizar as credenciais.
 - [ ] Completar o checklist manual restante.
 - [ ] Configurar CI (lint, tipos, testes, build).
 
@@ -202,12 +210,10 @@
 
 ## Próximos passos imediatos
 
-1. Reivindicar o projeto Neon claimable antes de **2026-11-13T16:15:55Z** e gerar um novo link se o código expirar.
-2. Se as URLs mudarem, atualizar `DATABASE_URL` e `DIRECT_URL` e rodar `npx prisma migrate status`.
-3. Completar os itens manuais pendentes de [07 — Testes e qualidade](./07-testes-e-qualidade.md).
-4. Configurar CI com uma branch Neon efêmera.
-5. Configurar backup/PITR depois do claim.
-6. Só depois avaliar publicação, com autorização explícita.
+1. Completar os itens manuais pendentes de [07 — Testes e qualidade](./07-testes-e-qualidade.md).
+2. Configurar CI com uma branch Neon efêmera.
+3. Configurar backup/PITR no Neon.
+4. Só depois avaliar publicação, com autorização explícita.
 
 ## Questões abertas
 
@@ -236,4 +242,4 @@
 - [x] Git com histórico de commits pequenos.
 - [ ] Publicação autorizada e testada (fase futura).
 
-> Pendências imediatas: reivindicar o projeto Neon até **2026-11-13T16:15:55Z**, completar o checklist manual e testar a exportação JSON.
+> Pendências imediatas: completar o checklist manual, testar a exportação JSON e configurar backup/PITR no Neon.

@@ -2,7 +2,7 @@
 
 Sistema pessoal de controle financeiro multiusuário, com dashboard, receitas, despesas, dívidas e contas. O app separa **dinheiro realizado** de **valores previstos** e impede que o pagamento de uma dívida seja contado duas vezes no caixa.
 
-> **Status:** MVP implementado e validado contra um banco Neon de desenvolvimento. Migração e seed aplicados. O projeto Neon é claimable e precisa ser reivindicado antes de **2026-11-13T16:15:55Z** para não expirar. Veja [Estado atual](#estado-atual).
+> **Status:** MVP implementado e validado contra um banco Neon de desenvolvimento. Migração e seed aplicados. O projeto Neon foi reivindicado e o `.env` local já usa as conexões pooled e direta atualizadas. Veja [Estado atual](#estado-atual).
 
 ## Funcionalidades
 
@@ -50,7 +50,7 @@ Detalhes completos em [docs/04-regras-financeiras.md](./docs/04-regras-financeir
 - Conta no Neon para o banco definitivo
 - Git
 
-> Para desenvolvimento, o projeto pode usar um banco **Claimable Neon** sem conta. Ele expira em 72 horas se não for reivindicado. O banco atual está nesse modo.
+> Para desenvolvimento, o projeto usa um banco Neon reivindicado. Ele não é produção; backups e retenção devem ser configurados antes de receber dados reais.
 
 ## Começando
 
@@ -175,34 +175,31 @@ Instruções para agentes de IA: [AGENTS.md](./AGENTS.md).
 
 ## Estado atual
 
-Implementado e verificado contra um banco Neon real (claimable, região `aws-sa-east-1`):
+Implementado e verificado contra um banco Neon real (reivindicado, região `aws-sa-east-1`):
 
 - `npm run build` passando.
 - `npm run lint` sem erros.
 - `npx tsc --noEmit` sem erros.
-- `npm test` com **34 testes** passando.
-- `npm run test:e2e` com 2 testes de autenticação passando.
-- `E2E_WITH_DB=1 npx playwright test --workers=1` com o fluxo MVP e o teste de isolamento passando.
+- `npm test` com **35 testes** passando.
+- `npm run test:e2e` com 4 testes passando com banco (`E2E_WITH_DB=1`): autenticação, fluxo MVP e isolamento.
 - Migration `20261110161632_init` aplicada.
 - Seed demo aplicado; login `demo@financeiro.local` / `demo12345` validado.
-- Dashboard real conferido: saldo total de **R$ 17.417,00**, receitas recebidas de **R$ 6.590,00**, despesas pagas de **R$ 3.973,00** e resultado de **R$ 2.617,00** no mês.
+- Dashboard real conferido com o seed demo: saldo atual de **R$ 11.181,00**, despesas pagas de **R$ 3.619,00** e resultado de **−R$ 3.619,00** em novembro de 2026.
 - Pagamento de dívida com despesa vinculada não é contado duas vezes; a despesa e o pagamento têm o mesmo valor e a conta não sofre dupla saída.
 - Isolamento comprovado por teste permanente com dois usuários: dashboard vazio e acesso direto a IDs de outro usuário resultam em “Recurso não encontrado”.
 - Exportação JSON, categorias e configurações revisadas no código; a validação manual restante está em [docs/07-testes-e-qualidade.md](./docs/07-testes-e-qualidade.md).
 
 Banco de desenvolvimento atual:
 
-- Projeto claimable `flat-queen-78874900`.
-- Branch `br-withered-cloud-b6336hbc`.
-- Expira em **2026-11-13T16:15:55Z** se não for reivindicado.
-- Após o claim, as URLs de conexão podem mudar; atualize `DATABASE_URL` e `DIRECT_URL`.
-- O link/código de claim não é armazenado no repositório.
+- Projeto Neon `flat-queen-78874900`, reivindicado.
+- Branch `br-withered-cloud-b6336hbc`, região `aws-sa-east-1`.
+- `DATABASE_URL` (pooled) e `DIRECT_URL` (direta) configuradas no `.env` local.
+- As credenciais e o link/código de claim não são armazenados no repositório.
 
 Pendente:
 
-- Reivindicar o projeto Neon antes do vencimento e conferir as novas credenciais.
 - Completar os itens manuais ainda abertos em `docs/07-testes-e-qualidade.md` (alguns fluxos de edição, status e backup).
-- Configurar backup/PITR depois do claim.
+- Configurar backup/PITR no Neon antes de usar dados reais.
 - Publicar na Vercel somente com autorização explícita.
 - Configurar CI com lint, tipos, unitários e build.
 

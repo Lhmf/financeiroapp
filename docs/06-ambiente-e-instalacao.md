@@ -87,7 +87,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 
 ### Atenção
 
-- O `.env` atual do projeto aponta para um banco claimable de desenvolvimento. **Reivindique o projeto antes de 2026-11-13T16:15:55Z** e atualize as URLs se elas mudarem.
+- O `.env` atual do projeto aponta para o banco Neon de desenvolvimento reivindicado. As conexões pooled (`DATABASE_URL`) e direta (`DIRECT_URL`) já foram atualizadas; mantenha-as fora do Git.
 - Não comite `.env`.
 - Não reutilize o segredo de desenvolvimento em produção.
 - Prefira `sslmode=verify-full`. Se o provedor só oferecer `sslmode=require`, o app funciona, mas o driver `pg` pode avisar sobre mudança futura.

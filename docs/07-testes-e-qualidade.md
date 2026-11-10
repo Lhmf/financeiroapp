@@ -134,16 +134,18 @@ O Playwright sobe `npm run dev` automaticamente, a menos que `PLAYWRIGHT_BASE_UR
 
 ## Validação executada
 
-Em **10/11/2026**, contra o Neon claimable de desenvolvimento:
+Em **10/11/2026**, contra o Neon de desenvolvimento reivindicado:
 
-- `npm test`: **34 testes em 4 arquivos**, todos passando.
+- `npm test`: **35 testes em 4 arquivos**, todos passando.
 - `npm run lint`: sem erros.
 - `npx tsc --noEmit`: sem erros.
 - `npm run build`: sucesso com Next.js 16.4.6.
 - `npm run test:e2e`: 2 testes de autenticação passando.
 - Teste completo com banco: passando em **53,6s**.
+- Suíte E2E com banco após o passe de UI/UX: **4 testes passando em 1,5 min**.
+- Validação visual manual em **1440×1000** e **390×844** no dashboard, receitas, despesas e contas.
 - Isolamento: **1 teste permanente** passando em **25,3s**, com dois usuários temporários removidos no `afterAll`.
-- Valores do seed conferidos: saldo total **R$ 17.417,00**, receitas recebidas **R$ 6.590,00**, despesas pagas **R$ 3.973,00**, resultado **R$ 2.617,00** no mês.
+- Valores do seed conferidos em novembro/2026: saldo atual **R$ 11.181,00**, receitas recebidas **R$ 0,00**, despesas pagas **R$ 3.619,00** e resultado **−R$ 3.619,00** no mês.
 - O pagamento vinculado de **R$ 500,00** aparece como despesa paga e não é descontado de novo no saldo da conta.
 
 ## Testes manuais com banco real
@@ -238,7 +240,7 @@ npm run build
 - `npm run lint`: sem erros.
 - `npx tsc --noEmit`: sem erros.
 - `npm run build`: sucesso.
-- `npm test`: 34 testes passando em 4 arquivos.
+- `npm test`: 35 testes passando em 4 arquivos.
 - `npm run test:e2e`: 2 testes de autenticação passando (Chromium).
 - Teste E2E com banco: 2 testes opt-in passando com `E2E_WITH_DB=1` (MVP completo + isolamento).
 
