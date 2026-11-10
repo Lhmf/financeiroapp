@@ -2,7 +2,7 @@
 
 Sistema pessoal de controle financeiro multiusuário, com dashboard, receitas, despesas, dívidas e contas. O app separa **dinheiro realizado** de **valores previstos** e impede que o pagamento de uma dívida seja contado duas vezes no caixa.
 
-> **Status:** MVP implementado e validado contra um banco Neon de desenvolvimento. Migração e seed aplicados. O projeto Neon foi reivindicado e o `.env` local já usa as conexões pooled e direta atualizadas. Veja [Estado atual](#estado-atual).
+> **Status:** MVP implementado e validado contra um banco Neon de desenvolvimento. Migração e seed aplicados. O projeto Neon foi reivindicado e o `.env` local já usa as conexões pooled e direta atualizadas. Há um **deploy de validação** na Vercel usando o banco de desenvolvimento. Veja [Estado atual](#estado-atual).
 
 ## Funcionalidades
 
@@ -181,10 +181,11 @@ Implementado e verificado contra um banco Neon real (reivindicado, região `aws-
 - `npm run lint` sem erros.
 - `npx tsc --noEmit` sem erros.
 - `npm test` com **35 testes** passando.
-- `npm run test:e2e` com 4 testes passando com banco (`E2E_WITH_DB=1`): autenticação, fluxo MVP e isolamento.
+- Smoke E2E sem banco passando. O E2E com banco (`E2E_WITH_DB=1`) está bloqueado pelo login do seed demo com domínio `.local`, rejeitado pela validação atual de e-mail do Better Auth.
 - Migration `20261110161632_init` aplicada.
-- Seed demo aplicado; login `demo@financeiro.local` / `demo12345` validado.
+- Seed demo aplicado; o usuário `demo@financeiro.local` existe, mas o login é rejeitado pela validação de e-mail (`.local` não é um domínio aceito). Para testar, crie uma conta com e-mail válido.
 - Dashboard real conferido com o seed demo: saldo atual de **R$ 11.181,00**, despesas pagas de **R$ 3.619,00** e resultado de **−R$ 3.619,00** em novembro de 2026.
+- Deploy de validação na Vercel em [https://financeiroapp-orcin.vercel.app](https://financeiroapp-orcin.vercel.app), projeto `the-castilho/financeiroapp`, conectado ao GitHub. Signup, dashboard, menu mobile, logout/login e contraste do saldo foram validados; o console ficou limpo no teste automatizado.
 - Pagamento de dívida com despesa vinculada não é contado duas vezes; a despesa e o pagamento têm o mesmo valor e a conta não sofre dupla saída.
 - Isolamento comprovado por teste permanente com dois usuários: dashboard vazio e acesso direto a IDs de outro usuário resultam em “Recurso não encontrado”.
 - Exportação JSON, categorias e configurações revisadas no código; a validação manual restante está em [docs/07-testes-e-qualidade.md](./docs/07-testes-e-qualidade.md).
@@ -200,7 +201,7 @@ Pendente:
 
 - Completar os itens manuais ainda abertos em `docs/07-testes-e-qualidade.md` (alguns fluxos de edição, status e backup).
 - Configurar backup/PITR no Neon antes de usar dados reais.
-- Publicar na Vercel somente com autorização explícita.
+- Criar um banco/branch Neon separado de produção e apontar as variáveis da Vercel para ele. O deploy atual ainda usa o banco de desenvolvimento.
 - Configurar CI com lint, tipos, unitários e build.
 
 ## Segurança

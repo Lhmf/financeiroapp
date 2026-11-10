@@ -144,7 +144,15 @@
 
 **Motivo:** melhorar hierarquia visual, leitura dos números, responsividade e acessibilidade sem aumentar o risco da migração estrutural pendente.
 
-**Consequência:** o dashboard ganhou destaque para o saldo e resumo de contas em grade; receitas e despesas mostram totais do período filtrado; contas usam ícones por tipo; a navegação recebeu `aria-current`, skip link e tratamento de safe area no mobile. A migração para UUID/Decimal/Transaction continua uma decisão separada.
+**Consequência:** o dashboard ganhou destaque para o saldo e resumo de contas em grade; receitas e despesas mostram totais do período filtrado; contas usam ícones por tipo; a navegação recebeu `aria-current`, skip link e tratamento de safe area no mobile. Os cards de saldo têm cor de fundo sólida inline como fallback para navegadores/extensões que removem gradientes, evitando texto branco sobre fundo claro. A migração para UUID/Decimal/Transaction continua uma decisão separada.
+
+### D19 — Deploy de validação na Vercel
+
+**Decisão:** publicar um deploy de validação na Vercel conectado ao GitHub, ainda usando o banco Neon de desenvolvimento.
+
+**Motivo:** validar autenticação, cookies, build serverless e comportamento visual em um ambiente público antes de separar o banco de produção.
+
+**Consequência:** a URL pública é `https://financeiroapp-orcin.vercel.app`. As variáveis `DATABASE_URL`, `DIRECT_URL`, `BETTER_AUTH_SECRET` e `BETTER_AUTH_URL` estão configuradas na Vercel. Antes de inserir dados reais, é obrigatório criar um banco/branch Neon de produção, aplicar as migrations e trocar as variáveis.
 
 ## Roadmap
 
@@ -174,11 +182,13 @@
 
 ### Fase 2 — Publicação
 
-- [ ] Reivindicar o projeto Neon e atualizar as credenciais.
-- [ ] Criar repositório remoto.
-- [ ] Configurar variáveis na Vercel.
-- [ ] `prisma migrate deploy` em produção.
-- [ ] Smoke test em produção.
+- [x] Reivindicar o projeto Neon e atualizar as credenciais.
+- [x] Criar repositório remoto no GitHub.
+- [x] Configurar variáveis na Vercel.
+- [x] Publicar um deploy de validação em https://financeiroapp-orcin.vercel.app.
+- [x] Smoke test de cadastro, login, logout, dashboard e menu mobile.
+- [ ] Criar banco/branch Neon separado de produção e aplicar `prisma migrate deploy`.
+- [ ] Apontar as variáveis de Production para o banco de produção.
 - [ ] Backup/PITR do Neon.
 - [ ] Monitoramento básico.
 

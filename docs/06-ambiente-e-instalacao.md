@@ -187,12 +187,17 @@ export default defineConfig({
     seed: "tsx prisma/seed.ts",
   },
   datasource: {
-    url: process.env["DATABASE_URL"],
+    // Migrações e inspeção usam a conexão direta quando disponível.
+    url:
+      process.env["DIRECT_URL"] ??
+      process.env["DATABASE_URL_UNPOOLED"] ??
+      process.env["DATABASE_URL"],
   },
 });
 ```
 
 - O schema **não** tem `url` no bloco `datasource`; a URL vem do config.
+- O runtime do app usa a `DATABASE_URL` pooled; as migrações preferem `DIRECT_URL` e aceitam `DATABASE_URL_UNPOOLED` como compatibilidade.
 - O adapter `pg` é configurado em `src/lib/prisma.ts`.
 - O client gerado fica em `src/generated/prisma`.
 - O diretório é ignorado no Git e regenerado por `postinstall`.
@@ -225,33 +230,45 @@ Se conectar, mostra o status das migrações. Se falhar, confira:
 9. Exporte o JSON em Configurações.
 10. Saia e entre novamente.
 
-## 12. Deploy futuro na Vercel
+## 12. Deploy na Vercel
 
-> A publicação ainda não foi autorizada. Quando for, siga o checklist.
+> **Status:** deploy de validação publicado em 10/11/2026. Ele ainda usa o banco Neon de desenvolvimento; **não é produção com dados reais**.
 
-1. Suba o repositório no GitHub (sem `.env`).
-2. Importe o projeto na Vercel.
-3. Configure as variáveis de ambiente:
-   - `DATABASE_URL` (pooled, produção);
-   - `DIRECT_URL` (direct, para migrações; `DATABASE_URL_UNPOOLED` é o fallback de compatibilidade);
-   - `BETTER_AUTH_SECRET` (novo);
-   - `BETTER_AUTH_URL` (URL HTTPS da Vercel).
-4. Rode `npm run db:deploy` apontando para o banco de produção (localmente ou em um job).
-5. Faça o deploy.
-6. Teste cadastro, login, logout e um CRUD completo.
-7. Confirme que o cookie funciona em HTTPS.
-8. Configure backup/PITR no Neon.
+- Projeto: `the-castilho/financeiroapp`
+- URL pública: https://financeiroapp-orcin.vercel.app
+- Repositório conectado: https://github.com/Lhmf/financeiroapp
+- A URL `https://financeiroapp-the-castilho.vercel.app` redireciona para o SSO da Vercel; use a URL pública acima.
 
-### Ordem segura
+### Variáveis configuradas na Vercel
 
-```text
-1. Migrations no banco de produção
-2. Variáveis na Vercel
-3. Deploy
-4. Smoke test em produção
-```
+| Variável | Uso |
+| --- | --- |
+| `DATABASE_URL` | Conexão pooled usada pelo app em execução |
+| `DIRECT_URL` | Conexão direta usada por migrações/inspeção do Prisma |
+| `BETTER_AUTH_SECRET` | Segredo próprio do deploy; não reutilize o segredo local |
+| `BETTER_AUTH_URL` | `https://financeiroapp-orcin.vercel.app` em Production e Preview |
 
-Nunca rode `db:seed` em produção sem intenção; ele cria um usuário demo.
+- As três primeiras são gravadas como sensíveis e não aparecem no `vercel env pull`.
+- `src/lib/auth.ts` usa `BETTER_AUTH_URL` quando definida e, como fallback, `VERCEL_PROJECT_PRODUCTION_URL` e `VERCEL_URL`. As duas origens da Vercel também entram em `trustedOrigins`.
+- O build da Vercel executa `prisma generate` no `postinstall` e `next build`.
+- O repositório não contém `.env`; as variáveis ficam apenas na Vercel e no ambiente local.
+
+### Fluxo de deploy
+
+1. Faça commit e push para `main`.
+2. A integração com o GitHub cria o deployment; para forçar pelo CLI, use `npx vercel --prod`.
+3. Verifique o status em `npx vercel inspect https://financeiroapp-orcin.vercel.app`.
+4. Faça o smoke test: cadastro, login, logout, dashboard, menu mobile e console do navegador.
+5. Confirme que o cookie de sessão funciona em HTTPS.
+
+### Antes de usar dados reais
+
+1. Crie um projeto ou branch Neon exclusivo de produção.
+2. Aplique as migrations com `npm run db:deploy` usando a `DIRECT_URL` de produção.
+3. Atualize `DATABASE_URL` e `DIRECT_URL` no ambiente Production da Vercel.
+4. Confirme `BETTER_AUTH_URL` e faça um novo deploy.
+5. Configure backup/PITR no Neon.
+6. **Nunca** rode `db:seed` em produção sem intenção; ele cria um usuário demo.
 
 ## 13. Problemas comuns
 

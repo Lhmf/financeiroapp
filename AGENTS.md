@@ -125,8 +125,8 @@ Mantenha o README e o AGENTS.md coerentes.
 - O `.env` local aponta para um banco **Neon de desenvolvimento reivindicado**; a `DATABASE_URL` pooled é usada pelo app e a `DIRECT_URL` (ou `DATABASE_URL_UNPOOLED`, por compatibilidade) pelas migrações.
 - A migration `20261110161632_init` foi aplicada e o seed demo foi executado contra esse banco.
 - O projeto Neon `flat-queen-78874900` foi reivindicado em 10/11/2026 e as conexões pooled/direta foram atualizadas. O banco continua sendo de desenvolvimento, não produção.
-- O seed demo é `demo@financeiro.local` / `demo12345`.
-- O MVP ainda não foi publicado.
+- O seed demo é `demo@financeiro.local` / `demo12345`, mas o login com esse domínio `.local` é rejeitado pela validação atual do Better Auth; use e-mail válido em testes.
+- Existe um deploy de validação na Vercel em `https://financeiroapp-orcin.vercel.app` (`the-castilho/financeiroapp`), conectado ao GitHub e usando o banco Neon de desenvolvimento. Ainda não é produção com dados reais; crie um banco/branch Neon de produção antes.
 - `npm audit` reportou vulnerabilidades moderadas não tratadas; avalie antes de produção.
 
 ## Definição de tarefa concluída
