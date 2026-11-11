@@ -21,6 +21,10 @@ import { LinkButton } from "@/components/ui/link-button";
 import { PageHeader } from "@/components/ui/page-header";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { ACCOUNT_TYPE_LABELS } from "@/lib/constants";
+import {
+  isInvestmentAccountType,
+  summarizeAccountBalances,
+} from "@/lib/finance";
 import { formatCents } from "@/lib/money";
 import { requireUser } from "@/lib/session";
 import { cn } from "@/lib/utils";
@@ -52,7 +56,7 @@ export default async function AccountsPage({
   const user = await requireUser();
   const params = await searchParams;
   const accounts = await getAccountBalances(user.id);
-  const total = accounts.reduce((sum, account) => sum + account.balanceCents, 0);
+  const summary = summarizeAccountBalances(accounts);
   const hasArchived = accounts.some((account) => account.archived);
 
   return (
@@ -85,23 +89,52 @@ export default async function AccountsPage({
         />
         <div className="relative">
           <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <p className="text-xs font-medium text-white">
-                Saldo total
-                {hasArchived ? " (inclui contas arquivadas)" : ""}
-              </p>
-              <p className="tabular mt-2 text-3xl font-semibold tracking-tight text-white">
-                {formatCents(total)}
-              </p>
-            </div>
+            <p className="text-xs font-medium text-white">
+              Saldos
+              {hasArchived ? " (inclui contas arquivadas)" : ""}
+            </p>
             <span className="rounded-full bg-white/15 px-2.5 py-1 text-[10px] font-medium text-white">
               {accounts.length} {accounts.length === 1 ? "conta" : "contas"}
             </span>
           </div>
-          <p className="mt-2 max-w-2xl text-[11px] leading-relaxed text-emerald-50">
-            Saldo inicial + receitas recebidas − despesas pagas − pagamentos de
-            dívida sem despesa vinculada.
-          </p>
+
+          <div className="mt-3 grid gap-4 sm:grid-cols-2">
+            <div>
+              <p className="text-[11px] font-medium text-emerald-50">
+                Saldo em conta
+              </p>
+              <p className="tabular mt-1 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+                {formatCents(summary.accountBalanceCents)}
+              </p>
+              <p className="mt-1 text-[11px] text-emerald-50/85">
+                Conta corrente, carteira e demais contas
+              </p>
+            </div>
+            <div className="sm:border-l sm:border-white/15 sm:pl-5">
+              <p className="text-[11px] font-medium text-emerald-50">
+                Saldo investido
+              </p>
+              <p className="tabular mt-1 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+                {formatCents(summary.investedBalanceCents)}
+              </p>
+              <p className="mt-1 text-[11px] text-emerald-50/85">
+                Poupança e investimentos
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-white/15 pt-3 text-[11px] text-emerald-50">
+            <span>
+              Patrimônio total:{" "}
+              <strong className="font-semibold text-white">
+                {formatCents(summary.totalPatrimonyCents)}
+              </strong>
+            </span>
+            <span className="text-emerald-50/75">
+              Saldo inicial + receitas recebidas − despesas pagas − pagamentos de
+              dívida sem despesa vinculada.
+            </span>
+          </div>
         </div>
       </Card>
 
@@ -125,6 +158,7 @@ export default async function AccountsPage({
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {accounts.map((account) => {
             const AccountIcon = ACCOUNT_ICONS[account.type];
+            const invested = isInvestmentAccountType(account.type);
 
             return (
               <Card
@@ -152,6 +186,9 @@ export default async function AccountsPage({
                           {account.archived ? (
                             <Badge tone="slate">Arquivada</Badge>
                           ) : null}
+                          {invested ? (
+                            <Badge tone="violet">Investido</Badge>
+                          ) : null}
                         </div>
                         <p className="text-[11px] text-slate-600">
                           {ACCOUNT_TYPE_LABELS[account.type]}
@@ -160,7 +197,7 @@ export default async function AccountsPage({
                     </div>
                     <div className="text-right">
                       <p className="text-[10px] font-medium uppercase tracking-wide text-slate-600">
-                        Saldo atual
+                        {invested ? "Saldo investido" : "Saldo em conta"}
                       </p>
                       <p className="tabular text-lg font-semibold text-slate-900">
                         {formatCents(account.balanceCents)}

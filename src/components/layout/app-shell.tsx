@@ -15,8 +15,10 @@ import {
   X,
   type LucideIcon,
 } from "lucide-react";
+import { StatementImportButton } from "@/components/imports/statement-import-button";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
+import type { AccountType, CategoryType } from "@/generated/prisma/enums";
 
 type NavItem = {
   href: string;
@@ -153,9 +155,15 @@ function UserCard({
 
 export function AppShell({
   user,
+  accounts,
+  categories,
+  defaultMonth,
   children,
 }: {
   user: { name: string; email: string };
+  accounts: Array<{ id: string; name: string; type: AccountType }>;
+  categories: Array<{ id: string; name: string; type: CategoryType }>;
+  defaultMonth: string;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
@@ -242,6 +250,11 @@ export function AppShell({
               Controle financeiro pessoal
             </p>
           </div>
+          <StatementImportButton
+            accounts={accounts}
+            categories={categories}
+            defaultMonth={defaultMonth}
+          />
           <Link
             href="/configuracoes"
             className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 bg-gradient-to-br from-slate-900 to-slate-700 text-xs font-semibold text-white ring-2 ring-white transition hover:from-slate-800 hover:to-slate-600"

@@ -61,6 +61,21 @@ saldo = 100.000 + 50.000 − 20.000 − 5.000 = 125.000 centavos = R$ 1.250,00
 
 O pagamento de R$ 100,00 não é subtraído diretamente porque a despesa vinculada de R$ 100,00 já foi subtraída. O pagamento de R$ 50,00 é subtraído diretamente.
 
+## 2.1 Saldo em conta e saldo investido
+
+O saldo calculado acima é o saldo de cada conta. Para exibir o patrimônio, as contas são agrupadas pelo `type`:
+
+```text
+saldo em conta   = contas CHECKING, CASH, CREDIT_CARD e OTHER
+saldo investido  = contas SAVINGS e INVESTMENT
+patrimônio total = saldo em conta + saldo investido
+```
+
+- O agrupamento é derivado de `AccountType`; não há campo extra nem migration.
+- Contas arquivadas continuam nos totais, como antes.
+- Um saldo negativo em qualquer grupo continua sendo somado e pode reduzir o patrimônio.
+- Os cards do dashboard e os totais da página de contas usam a mesma função pura (`summarizeAccountBalances`).
+
 ## 3. Resultado do mês
 
 ```text
@@ -161,7 +176,7 @@ O saldo inicial é o saldo real da conta no momento em que o usuário começa a 
 
 - Conta arquivada não aparece nas opções de novos lançamentos.
 - O histórico e o saldo continuam existindo.
-- O saldo total do dashboard inclui contas arquivadas.
+- Os saldos em conta e investido incluem contas arquivadas.
 - A interface indica quando o total inclui arquivadas.
 
 ### Exclusão
@@ -173,6 +188,23 @@ Uma conta só pode ser excluída se não tiver:
 - pagamentos de dívida vinculados.
 
 Caso contrário, a ação redireciona com erro e orienta arquivar.
+
+### Importação de extrato
+
+O botão **Extrato** no cabeçalho abre a importação. O arquivo é lido no navegador e o usuário revisa a prévia antes de qualquer escrita.
+
+- Formatos: CSV e OFX.
+- Limites: 5 MB e 500 lançamentos por importação.
+- O CSV aceita `;`, `,` ou tabulação, campos entre aspas, UTF-8 e Windows-1252.
+- Créditos viram `Income` com `status = RECEIVED`; débitos viram `Expense` com `status = PAID`.
+- A conta escolhida precisa estar ativa e pertencer ao usuário.
+- As datas reais do extrato são preservadas. Se o arquivo não tiver data, usa-se o primeiro dia do mês de referência.
+- Categorias são sugeridas por palavras-chave e podem ser alteradas ou deixadas em branco.
+- Valores sem sinal e sem coluna de tipo são tratados como crédito por padrão; a prévia avisa e permite marcar que positivos são despesas.
+- Aplicações/resgates, faturas/cartão, saques/depósitos e transferências entre contas próprias são sinalizados e **desmarcados por padrão**.
+- Reimportações usam um marcador em `notes` para ignorar linhas já importadas.
+
+**Limitação:** o app ainda não tem transferência real entre contas. Se o usuário marcar uma transferência na prévia, ela será gravada como receita ou despesa e afetará o resultado. Também não concilie o extrato da conta e a fatura do cartão ao mesmo tempo: as compras do cartão e o pagamento da fatura podem duplicar a saída. Renomear o arquivo ou editar o `notes` de um lançamento pode impedir o reconhecimento na reimportação. O importador é uma conveniência de digitação, não uma conciliação bancária.
 
 ## 6. Categorias
 
@@ -201,6 +233,7 @@ Caso contrário, a ação redireciona com erro e orienta arquivar.
 ### Dashboard
 
 - Receitas e despesas do mês usam datas realizadas.
+- “Saldo em conta” e “Saldo investido” seguem o agrupamento por `AccountType`; “Patrimônio total” é a soma.
 - “A receber” e “Pendente” são totais globais de registros nesse status, não apenas do mês selecionado.
 - A evolução mostra os últimos seis meses até o mês selecionado.
 - A navegação mensal usa `?mes=YYYY-MM`.
@@ -228,6 +261,13 @@ Caso contrário, a ação redireciona com erro e orienta arquivar.
 | Despesa paga sem conta | Bloqueada na validação |
 | Mês sem lançamentos | Indicadores zerados; estado vazio nas listas |
 | Total de categoria zero | Percentual 0, sem divisão por zero |
+| Arquivo de extrato acima de 5 MB | Rejeitado no navegador com mensagem |
+| Extrato com mais de 500 linhas | Primeiras 500 são lidas; a prévia avisa |
+| CSV sem coluna de data | Usa o primeiro dia do mês de referência |
+| Linha de transferência/aplicação | Marcada e desmarcada por padrão |
+| Mesmo extrato reimportado | Marcador em `notes` ignora linhas já gravadas |
+| Arquivo reimportado com outro nome | O marcador muda e pode duplicar |
+| `notes` de um lançamento importado editado | A proteção contra duplicidade pode deixar de reconhecer a linha |
 
 ## 10. O que ainda não é calculado
 

@@ -19,6 +19,7 @@ Arquivos:
 - `tests/unit/dates.test.ts`
 - `tests/unit/finance.test.ts`
 - `tests/unit/validation.test.ts`
+- `tests/unit/statement.test.ts`
 
 Cobrem:
 
@@ -35,7 +36,10 @@ Cobrem:
 - saldo devedor e progresso;
 - pagamentos sem vínculo;
 - percentuais e variação;
-- rejeição de forma de pagamento vazia em despesas e pagamentos de dívida.
+- rejeição de forma de pagamento vazia em despesas e pagamentos de dívida;
+- separação entre saldo em conta e saldo investido;
+- parsing de CSV e OFX, datas, valores, encoding Windows-1252, categorias sugeridas e detecção de transferências;
+- validação da prévia de importação e proteção por marcador.
 
 Rodar:
 
@@ -136,7 +140,7 @@ O Playwright sobe `npm run dev` automaticamente, a menos que `PLAYWRIGHT_BASE_UR
 
 Em **10/11/2026**, contra o Neon de desenvolvimento reivindicado:
 
-- `npm test`: **35 testes em 4 arquivos**, todos passando.
+- `npm test`: **60 testes em 5 arquivos**, todos passando.
 - `npm run lint`: sem erros.
 - `npx tsc --noEmit`: sem erros.
 - `npm run build`: sucesso com Next.js 16.4.6.
@@ -145,8 +149,9 @@ Em **10/11/2026**, contra o Neon de desenvolvimento reivindicado:
 - Suíte E2E com banco após o passe de UI/UX: **4 testes passando em 1,5 min**.
 - Validação visual manual em **1440×1000** e **390×844** no dashboard, receitas, despesas e contas.
 - Isolamento: **1 teste permanente** passando em **25,3s**, com dois usuários temporários removidos no `afterAll`.
-- Valores do seed conferidos em novembro/2026: saldo atual **R$ 11.181,00**, receitas recebidas **R$ 0,00**, despesas pagas **R$ 3.619,00** e resultado **−R$ 3.619,00** no mês.
+- Valores conferidos no banco de desenvolvimento em novembro/2026: saldo em conta **R$ 1.181,00**, saldo investido **R$ 10.000,00**, patrimônio total **R$ 11.181,00**, receitas recebidas **R$ 0,00**, despesas pagas **R$ 3.619,00** e resultado **−R$ 3.619,00** no mês.
 - O pagamento vinculado de **R$ 500,00** aparece como despesa paga e não é descontado de novo no saldo da conta.
+- Importação de extrato validada por Playwright em 10/11/2026: cadastro, conta corrente, CSV com três linhas, transferência desmarcada, importação de dois lançamentos, saldo em conta de **R$ 5.849,55** e zero erros de console. O teste descartável foi removido; o parser ficou coberto por testes permanentes.
 
 ## Testes manuais com banco real
 
@@ -194,6 +199,18 @@ Os itens marcados já foram validados; os demais continuam pendentes. Depois de 
 - [x] Editar valor e excluir despesa paga.
 - [ ] Filtrar por mês, categoria, status e busca.
 
+### Importação de extrato
+
+- [x] Importar CSV com débitos e créditos.
+- [x] Conferir prévia e contagem de selecionados.
+- [x] Confirmar que aplicação/transferência vem desmarcada.
+- [x] Confirmar que o saldo em conta muda após importar.
+- [ ] Reimportar o mesmo arquivo e confirmar que não duplica.
+- [ ] Importar um OFX real de banco.
+- [ ] Editar categoria por linha antes de importar.
+- [ ] Conferir CSV sem data usando o mês de referência.
+- [ ] Criar conta `SAVINGS`/`INVESTMENT` e conferir saldo investido separado.
+
 ### Dívidas
 
 - [x] Criar dívida.
@@ -240,9 +257,9 @@ npm run build
 - `npm run lint`: sem erros.
 - `npx tsc --noEmit`: sem erros.
 - `npm run build`: sucesso.
-- `npm test`: 35 testes passando em 4 arquivos.
+- `npm test`: 60 testes passando em 5 arquivos.
 - `npm run test:e2e`: 2 testes de autenticação passando (Chromium).
-- Teste E2E com banco: 2 testes opt-in passando com `E2E_WITH_DB=1` (MVP completo + isolamento).
+- Teste E2E com banco: bloqueado pelo login do seed `demo@financeiro.local`, rejeitado pela validação de e-mail do Better Auth. O smoke sem banco continua passando.
 
 ## O que ainda não está automatizado
 

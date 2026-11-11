@@ -6,9 +6,11 @@ import {
   calculateDebtProgress,
   calculateMonthResult,
   isDebtPaid,
+  isInvestmentAccountType,
   safePercent,
   sumCents,
   sumUnlinkedDebtPayments,
+  summarizeAccountBalances,
   variationPercent,
 } from "@/lib/finance";
 
@@ -103,5 +105,44 @@ describe("percentuais", () => {
     expect(safePercent(25, 100)).toBe(25);
     expect(safePercent(30, 0)).toBe(0);
     expect(safePercent(150, 100)).toBe(100);
+  });
+});
+
+describe("isInvestmentAccountType", () => {
+  it("separa poupança e investimento das demais contas", () => {
+    expect(isInvestmentAccountType("SAVINGS")).toBe(true);
+    expect(isInvestmentAccountType("INVESTMENT")).toBe(true);
+    expect(isInvestmentAccountType("CHECKING")).toBe(false);
+    expect(isInvestmentAccountType("CASH")).toBe(false);
+    expect(isInvestmentAccountType("CREDIT_CARD")).toBe(false);
+    expect(isInvestmentAccountType("OTHER")).toBe(false);
+  });
+});
+
+describe("summarizeAccountBalances", () => {
+  it("soma saldo em conta e saldo investido separadamente", () => {
+    const summary = summarizeAccountBalances([
+      { type: "CHECKING", balanceCents: 100_000 },
+      { type: "SAVINGS", balanceCents: 50_000 },
+      { type: "INVESTMENT", balanceCents: 25_000 },
+      { type: "CASH", balanceCents: 5_000 },
+    ]);
+
+    expect(summary.accountBalanceCents).toBe(105_000);
+    expect(summary.investedBalanceCents).toBe(75_000);
+    expect(summary.totalPatrimonyCents).toBe(180_000);
+    expect(summary.accountCount).toBe(2);
+    expect(summary.investedCount).toBe(2);
+  });
+
+  it("preserva saldos negativos no resultado", () => {
+    const summary = summarizeAccountBalances([
+      { type: "CHECKING", balanceCents: -10_000 },
+      { type: "INVESTMENT", balanceCents: 20_000 },
+    ]);
+
+    expect(summary.accountBalanceCents).toBe(-10_000);
+    expect(summary.investedBalanceCents).toBe(20_000);
+    expect(summary.totalPatrimonyCents).toBe(10_000);
   });
 });

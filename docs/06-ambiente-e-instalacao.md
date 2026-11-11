@@ -153,6 +153,18 @@ npm run dev
 
 Abra [http://localhost:3000](http://localhost:3000). A raiz redireciona para login ou dashboard conforme a sessão.
 
+### Importar extrato
+
+1. Entre no app e clique em **Extrato**, ao lado do avatar.
+2. Selecione uma conta ativa. Se ainda não houver conta, crie uma em `/contas/nova`.
+3. Envie um arquivo CSV ou OFX de até 5 MB.
+4. Revise a prévia: desmarque o que não quiser, ajuste categorias e confirme o mês de referência.
+5. Clique em **Importar N lançamentos**.
+
+Créditos entram como receitas recebidas e débitos como despesas pagas. As datas do arquivo são preservadas. Transferências, aplicações, faturas, saques e depósitos são sinalizados e desmarcados por padrão. O limite é de 500 lançamentos por importação.
+
+Não há variável de ambiente ou dependência nova para importar. O processamento inicial é local no navegador; a gravação passa por uma Server Action autenticada, valida ownership da conta e da categoria e grava receitas/despesas em uma transação.
+
 ## 8. Scripts disponíveis
 
 | Script | O que faz |
@@ -227,8 +239,11 @@ Se conectar, mostra o status das migrações. Se falhar, confira:
 6. Cadastre uma dívida e registre um pagamento com “criar despesa vinculada”.
 7. Confira que o pagamento não aparece duas vezes no saldo.
 8. Recarregue a página e confirme a persistência.
-9. Exporte o JSON em Configurações.
-10. Saia e entre novamente.
+9. Crie uma conta `SAVINGS` ou `INVESTMENT` e confira o card **Saldo investido**.
+10. Importe um CSV de teste pelo botão **Extrato** e confira a prévia, a transferência desmarcada e os lançamentos criados.
+11. Reimporte o mesmo arquivo e confirme que os itens já existentes são ignorados.
+12. Exporte o JSON em Configurações.
+13. Saia e entre novamente.
 
 ## 12. Deploy na Vercel
 
@@ -258,7 +273,7 @@ Se conectar, mostra o status das migrações. Se falhar, confira:
 1. Faça commit e push para `main`.
 2. A integração com o GitHub cria o deployment; para forçar pelo CLI, use `npx vercel --prod`.
 3. Verifique o status em `npx vercel inspect https://financeiroapp-orcin.vercel.app`.
-4. Faça o smoke test: cadastro, login, logout, dashboard, menu mobile e console do navegador.
+4. Faça o smoke test: cadastro, login, logout, dashboard, menu mobile, importação de um CSV pequeno e console do navegador.
 5. Confirme que o cookie de sessão funciona em HTTPS.
 
 ### Antes de usar dados reais

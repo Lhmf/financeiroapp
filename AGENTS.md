@@ -42,6 +42,8 @@ npm run db:seed        # seed demo
 10. **Conta com movimentações não pode ser excluída; deve ser arquivada.**
 11. **Categoria em uso não pode ser excluída.**
 12. **Nunca comite `.env`, segredos ou `src/generated/`.**
+13. **Saldo em conta e saldo investido são separados.** `SAVINGS` e `INVESTMENT` compõem o saldo investido; os demais tipos compõem o saldo em conta. O patrimônio total é a soma. Contas arquivadas continuam nos totais.
+14. **Importação de extrato preserva as datas reais e não cria transferências.** Créditos viram receitas `RECEIVED`, débitos viram despesas `PAID`, e o marcador `[extrato:<hash>]` em `notes` evita reimportação. Movimentos internos são sinalizados e desmarcados por padrão.
 
 ## Convenções de código
 
@@ -126,6 +128,8 @@ Mantenha o README e o AGENTS.md coerentes.
 - A migration `20261110161632_init` foi aplicada e o seed demo foi executado contra esse banco.
 - O projeto Neon `flat-queen-78874900` foi reivindicado em 10/11/2026 e as conexões pooled/direta foram atualizadas. O banco continua sendo de desenvolvimento, não produção.
 - O seed demo é `demo@financeiro.local` / `demo12345`, mas o login com esse domínio `.local` é rejeitado pela validação atual do Better Auth; use e-mail válido em testes.
+- A importação de extrato CSV/OFX está implementada no cabeçalho (`Extrato`), com parser em `src/lib/statement.ts`, action em `src/actions/imports.ts` e prévia em `src/components/imports/`. Ela não altera o schema; usa `notes` para deduplicar.
+- O dashboard exibe saldo em conta e saldo investido; a página de contas também mostra o patrimônio total. `SAVINGS`/`INVESTMENT` são investimento; os demais tipos são conta.
 - Existe um deploy de validação na Vercel em `https://financeiroapp-orcin.vercel.app` (`the-castilho/financeiroapp`), conectado ao GitHub e usando o banco Neon de desenvolvimento. Ainda não é produção com dados reais; crie um banco/branch Neon de produção antes.
 - `npm audit` reportou vulnerabilidades moderadas não tratadas; avalie antes de produção.
 

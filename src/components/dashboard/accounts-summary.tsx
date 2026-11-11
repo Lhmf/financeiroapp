@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Wallet } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ACCOUNT_TYPE_LABELS } from "@/lib/constants";
+import { isInvestmentAccountType } from "@/lib/finance";
 import { formatCents } from "@/lib/money";
 import type { AccountType } from "@/generated/prisma/enums";
 
@@ -23,7 +24,7 @@ export function AccountsSummary({
         <div>
           <h3 className="text-sm font-semibold text-slate-900">Suas contas</h3>
           <p className="mt-0.5 text-xs text-slate-600">
-            Saldo realizado por conta
+            Saldo realizado por conta · investimentos separados
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -70,6 +71,7 @@ export function AccountsSummary({
                 </p>
                 <p className="text-[11px] text-slate-600">
                   {ACCOUNT_TYPE_LABELS[account.type]}
+                  {isInvestmentAccountType(account.type) ? " · investido" : ""}
                 </p>
               </div>
               <p className="tabular shrink-0 text-xs font-semibold text-slate-700">

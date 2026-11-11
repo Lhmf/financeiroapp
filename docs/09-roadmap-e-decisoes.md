@@ -154,6 +154,14 @@
 
 **Consequência:** a URL pública é `https://financeiroapp-orcin.vercel.app`. As variáveis `DATABASE_URL`, `DIRECT_URL`, `BETTER_AUTH_SECRET` e `BETTER_AUTH_URL` estão configuradas na Vercel. Antes de inserir dados reais, é obrigatório criar um banco/branch Neon de produção, aplicar as migrations e trocar as variáveis.
 
+### D20 — Importação de extrato e saldos separados
+
+**Decisão:** importar CSV/OFX com prévia e gravar apenas receitas recebidas e despesas pagas; separar o patrimônio em saldo em conta e saldo investido pelo `AccountType`.
+
+**Motivo:** reduzir digitação e deixar claro quanto está disponível em conta e quanto está em poupança/investimento, sem criar tabelas ou dependências novas.
+
+**Consequência:** `SAVINGS` e `INVESTMENT` formam o saldo investido; os demais tipos formam o saldo em conta. A deduplicação usa um marcador em `notes`, então editar as observações pode reduzir a proteção. Transferências continuam sem modelo próprio: são detectadas e desmarcadas na prévia, mas, se importadas, viram receita/despesa.
+
 ## Roadmap
 
 ### Fase 0 — Fundação (concluída no código)
@@ -165,6 +173,8 @@
 - [x] Dashboard, receitas, despesas, dívidas, contas e configurações.
 - [x] Regras financeiras puras e testadas.
 - [x] Exportação JSON.
+- [x] Importação de extrato CSV/OFX com prévia.
+- [x] Saldo em conta separado do saldo investido.
 - [x] Testes unitários e smoke E2E.
 - [x] Documentação em português.
 
@@ -208,8 +218,8 @@
 - [ ] Relatório anual.
 - [ ] Exportação CSV/Excel.
 - [ ] Importação JSON com dry-run.
-- [ ] Metas e patrimônio.
-- [ ] Investimentos.
+- [ ] Metas e patrimônio histórico.
+- [ ] Posições, movimentações e rentabilidade de investimentos.
 
 ### Fase 5 — Automação
 

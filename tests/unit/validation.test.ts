@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { debtPaymentSchema, expenseSchema } from "@/lib/validation";
+import {
+  debtPaymentSchema,
+  expenseSchema,
+  statementImportSchema,
+} from "@/lib/validation";
 
 const validExpense = {
   description: "Despesa de teste",
@@ -65,5 +69,49 @@ describe("debtPaymentSchema", () => {
       expect(result.data.paymentMethod).toBeUndefined();
       expect(result.data.createExpense).toBe(true);
     }
+  });
+});
+
+describe("statementImportSchema", () => {
+  const valid = {
+    financialAccountId: "account-id",
+    referenceMonth: "2026-11",
+    fileName: "extrato.csv",
+    transactions: [
+      {
+        sourceIndex: 1,
+        date: "2026-11-10",
+        description: "Mercado",
+        amountCents: 10_000,
+        kind: "expense",
+        categoryId: "category-id",
+      },
+    ],
+  };
+
+  it("aceita uma prévia válida e categoria opcional", () => {
+    expect(statementImportSchema.safeParse(valid).success).toBe(true);
+    expect(
+      statementImportSchema.safeParse({
+        ...valid,
+        transactions: [{ ...valid.transactions[0], categoryId: undefined }],
+      }).success,
+    ).toBe(true);
+  });
+
+  it("rejeita mês inválido, valor não positivo e lista vazia", () => {
+    expect(
+      statementImportSchema.safeParse({ ...valid, referenceMonth: "2026-13" })
+        .success,
+    ).toBe(false);
+    expect(
+      statementImportSchema.safeParse({
+        ...valid,
+        transactions: [{ ...valid.transactions[0], amountCents: 0 }],
+      }).success,
+    ).toBe(false);
+    expect(
+      statementImportSchema.safeParse({ ...valid, transactions: [] }).success,
+    ).toBe(false);
   });
 });

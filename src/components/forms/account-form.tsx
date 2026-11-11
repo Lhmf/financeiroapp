@@ -60,7 +60,12 @@ export function AccountForm({
           />
         </Field>
 
-        <Field label="Tipo" htmlFor="type" error={errorFor("type")}>
+        <Field
+          label="Tipo"
+          htmlFor="type"
+          error={errorFor("type")}
+          hint="Poupança e investimento entram no saldo investido; os demais tipos entram no saldo em conta."
+        >
           <Select
             id="type"
             name="type"

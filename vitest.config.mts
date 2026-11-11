@@ -9,7 +9,12 @@ export default defineConfig({
     include: ["tests/unit/**/*.test.ts"],
     coverage: {
       reporter: ["text", "html"],
-      include: ["src/lib/money.ts", "src/lib/dates.ts", "src/lib/finance.ts"],
+      include: [
+        "src/lib/money.ts",
+        "src/lib/dates.ts",
+        "src/lib/finance.ts",
+        "src/lib/statement.ts",
+      ],
     },
   },
 });

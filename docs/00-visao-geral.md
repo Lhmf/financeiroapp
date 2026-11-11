@@ -25,11 +25,12 @@ O projeto prioriza **clareza sobre sofisticação**. A interface separa visualme
 | Área | Incluído no MVP |
 | --- | --- |
 | Autenticação | Cadastro, login, logout, sessão persistida, isolamento por usuário |
-| Dashboard | Saldo realizado, resultado do mês, previstos, dívidas, gráficos, vencimentos |
+| Dashboard | Saldo em conta, saldo investido, resultado do mês, previstos, dívidas, gráficos, vencimentos |
 | Receitas | CRUD, status prevista/recebida, categoria, conta, data prevista e recebida |
 | Despesas | CRUD, status pendente/paga, tipo, categoria, conta, parcelamento, forma de pagamento |
 | Dívidas | CRUD, pagamentos parciais, saldo devedor, progresso, quitação, histórico |
-| Contas | CRUD, saldo inicial, saldo calculado, arquivamento |
+| Contas | CRUD, saldo inicial, saldo calculado, separação conta/investimento, patrimônio total, arquivamento |
+| Importação | Extrato CSV/OFX com prévia, categorias sugeridas, seleção e deduplicação |
 | Categorias | Categorias padrão por usuário, criação, edição e exclusão |
 | Configurações | Nome do perfil, categorias e exportação JSON |
 | Qualidade | Testes unitários, smoke test E2E, lint, build, documentação |
@@ -37,10 +38,10 @@ O projeto prioriza **clareza sobre sofisticação**. A interface separa visualme
 ## Fora do escopo do MVP
 
 - Planejamento orçamentário por categoria.
-- Metas financeiras e patrimônio.
-- Investimentos e rentabilidade.
+- Metas financeiras e patrimônio histórico.
+- Rentabilidade, posições e movimentações detalhadas de investimentos.
 - Cartão de crédito com fatura e ciclo detalhado.
-- Importação de extrato ou OFX.
+- Conciliação bancária automática e Open Finance.
 - Restauração automática do backup.
 - Aplicativo mobile nativo.
 - Notificações por e-mail, push ou WhatsApp.
@@ -49,19 +50,17 @@ O projeto prioriza **clareza sobre sofisticação**. A interface separa visualme
 
 ## Estado atual (novembro de 2026)
 
-O código do MVP está implementado no repositório local. A aplicação compila (`next build`), passa no lint e os testes unitários passam. O que ainda depende de ação externa:
+O código está implementado no repositório local e validado contra um banco Neon de desenvolvimento reivindicado. A aplicação compila (`next build`), passa no lint, nos tipos e nos testes unitários. O que ainda depende de ação externa:
 
-- **Conexão real com o Neon:** o `.env` local ainda contém uma `DATABASE_URL` de exemplo. Sem ela, login, cadastro, migrações, seed e testes com persistência não funcionam.
-- **Migrações aplicadas:** `prisma migrate dev` ainda não foi executado contra um banco real.
-- **Seed demonstrativo:** `npm run db:seed` ainda não foi executado.
-- **Validação manual dos critérios de aceite:** depende do banco conectado.
-- **Publicação na Vercel:** ainda não autorizada e depende de banco e variáveis de produção.
+- **Banco de produção:** o deploy de validação usa o Neon de desenvolvimento. Antes de dados reais, crie um projeto/branch separado, aplique as migrations e configure backup/PITR.
+- **Validação manual restante:** alguns fluxos de edição, backup e importação de arquivos reais ainda estão abertos em `07-testes-e-qualidade.md`.
+- **CI:** lint, tipos, testes e build ainda não rodam automaticamente.
 
 ## Perfis de uso
 
 - **Usuário principal:** profissional autônomo ou assalariado que quer acompanhar renda variável, despesas fixas, parcelas e dívidas.
 - **Usuários adicionais:** cada pessoa tem sua própria conta; não há compartilhamento de dados no MVP.
-- **Uso típico:** cadastrar contas e saldo inicial, lançar receitas e despesas do mês, registrar dívidas e pagamentos, revisar o dashboard semanalmente.
+- **Uso típico:** cadastrar contas e saldo inicial, importar o extrato do mês ou lançar receitas e despesas manualmente, registrar dívidas e pagamentos, revisar o dashboard semanalmente.
 
 ## Glossário
 
@@ -73,6 +72,9 @@ O código do MVP está implementado no repositório local. A aplicação compila
 | Despesa vinculada | Despesa criada automaticamente para representar o pagamento de uma dívida no caixa |
 | Pagamento sem vínculo | Pagamento de dívida que não gerou despesa e, por isso, é contado diretamente como saída |
 | Conta arquivada | Conta preservada no histórico, mas indisponível para novas movimentações |
+| Saldo em conta | Soma das contas `CHECKING`, `CASH`, `CREDIT_CARD` e `OTHER` |
+| Saldo investido | Soma das contas `SAVINGS` e `INVESTMENT` |
+| Importação de extrato | Leitura de CSV/OFX com revisão antes de criar receitas e despesas |
 | Centavos | Unidade inteira usada para armazenar dinheiro, evitando erro de ponto flutuante |
 
 ## Documentos relacionados

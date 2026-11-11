@@ -16,6 +16,7 @@ import {
   calculateDebtProgress,
   calculateMonthResult,
   safePercent,
+  summarizeAccountBalances,
 } from "@/lib/finance";
 
 export async function getDashboardData(
@@ -251,17 +252,16 @@ export async function getDashboardData(
     0,
   );
 
-  const totalBalanceCents = accountBalances.reduce(
-    (total, account) => total + account.balanceCents,
-    0,
-  );
+  const balanceSummary = summarizeAccountBalances(accountBalances);
 
   return {
     month: {
       key: monthKeyValue,
       label: monthLabel(monthStart),
     },
-    totalBalanceCents,
+    accountBalanceCents: balanceSummary.accountBalanceCents,
+    investedBalanceCents: balanceSummary.investedBalanceCents,
+    totalPatrimonyCents: balanceSummary.totalPatrimonyCents,
     monthReceivedCents,
     monthPaidCents,
     monthUnlinkedDebtCents,

@@ -8,6 +8,63 @@
 
 export type Cents = number;
 
+/** Tipos de conta que compõem o saldo investido. */
+export const INVESTMENT_ACCOUNT_TYPES = ["SAVINGS", "INVESTMENT"] as const;
+
+export type InvestmentAccountType = (typeof INVESTMENT_ACCOUNT_TYPES)[number];
+
+/** Poupança e investimento ficam separados do dinheiro disponível em conta. */
+export function isInvestmentAccountType(type: string): boolean {
+  return INVESTMENT_ACCOUNT_TYPES.includes(
+    type.toUpperCase() as InvestmentAccountType,
+  );
+}
+
+export type BalanceAccount = {
+  type: string;
+  balanceCents: number;
+};
+
+export type AccountBalanceSummary = {
+  accountBalanceCents: number;
+  investedBalanceCents: number;
+  totalPatrimonyCents: number;
+  accountCount: number;
+  investedCount: number;
+};
+
+/**
+ * Separa o patrimônio em:
+ * - saldo em conta: contas correntes, carteira e demais tipos não investidos;
+ * - saldo investido: poupança e investimento.
+ */
+export function summarizeAccountBalances(
+  accounts: Iterable<BalanceAccount>,
+): AccountBalanceSummary {
+  let accountBalanceCents = 0;
+  let investedBalanceCents = 0;
+  let accountCount = 0;
+  let investedCount = 0;
+
+  for (const account of accounts) {
+    if (isInvestmentAccountType(account.type)) {
+      investedBalanceCents += account.balanceCents;
+      investedCount += 1;
+    } else {
+      accountBalanceCents += account.balanceCents;
+      accountCount += 1;
+    }
+  }
+
+  return {
+    accountBalanceCents,
+    investedBalanceCents,
+    totalPatrimonyCents: accountBalanceCents + investedBalanceCents,
+    accountCount,
+    investedCount,
+  };
+}
+
 export function sumCents(values: Iterable<number>): number {
   let total = 0;
   for (const value of values) total += value;

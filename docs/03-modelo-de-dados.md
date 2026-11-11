@@ -74,6 +74,8 @@ Reservada para fluxos de verificação/recuperação. Não usada no MVP.
 
 Relações: receitas, despesas e pagamentos de dívida. A exclusão da conta não apaga esses registros; o vínculo fica nulo (`SetNull`). Por isso, a ação de exclusão bloqueia contas com movimentações.
 
+Não existe um campo que marque uma conta como investimento além de `type`. Nos totais, `SAVINGS` e `INVESTMENT` formam o **saldo investido**; `CHECKING`, `CASH`, `CREDIT_CARD` e `OTHER` formam o **saldo em conta**. Contas arquivadas continuam nos dois grupos.
+
 ### `Category`
 
 | Campo | Tipo | Observação |
@@ -118,6 +120,18 @@ Uma receita `RECEIVED` deve ter `receivedDate` e conta para aparecer no saldo. A
 | `notes` | String? | Observações |
 
 Relação inversa: `debtPayment` (0..1). Uma despesa pode estar vinculada a no máximo um pagamento de dívida.
+
+### Importação de extrato
+
+A importação não cria tabela própria. Cada linha revisada vira um `Income` com `status = RECEIVED` ou um `Expense` com `status = PAID`, usando as datas reais do extrato e a conta escolhida. Quando o arquivo não tem data, a data de referência é o primeiro dia do mês selecionado.
+
+Para evitar duplicidade em reimportações, o início de `notes` recebe um marcador:
+
+```text
+[extrato:<sha1-16>] Importado do extrato "<arquivo>" (item <n>).
+```
+
+O hash considera arquivo, conta, índice da linha, data, tipo, valor e descrição normalizada. A ação procura esses marcadores apenas na conta e no intervalo de datas importado. Editar ou apagar o `notes` remove essa proteção. Não há migration ou campo novo para o importador.
 
 ### `Debt`
 

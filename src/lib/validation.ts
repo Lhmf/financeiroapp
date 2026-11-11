@@ -274,6 +274,40 @@ export const profileSchema = z.object({
     .max(80, "Máximo de 80 caracteres."),
 });
 
+export const statementImportEntrySchema = z.object({
+  sourceIndex: z.number().int().positive(),
+  date: dateString,
+  description: z
+    .string()
+    .trim()
+    .min(1, "Informe a descrição.")
+    .max(120, "Máximo de 120 caracteres."),
+  amountCents: z
+    .number()
+    .int()
+    .positive("O valor deve ser positivo.")
+    .max(9_999_999_999, "Valor acima do limite do app."),
+  kind: z.enum(["income", "expense"]),
+  categoryId: optionalId,
+});
+
+export const statementImportSchema = z.object({
+  financialAccountId: z.string().trim().min(1, "Selecione a conta."),
+  referenceMonth: z
+    .string()
+    .trim()
+    .regex(/^\d{4}-(0[1-9]|1[0-2])$/, "Mês de referência inválido."),
+  fileName: z
+    .string()
+    .trim()
+    .min(1, "Selecione um arquivo.")
+    .max(180, "Nome de arquivo muito longo."),
+  transactions: z
+    .array(statementImportEntrySchema)
+    .min(1, "Selecione pelo menos um lançamento.")
+    .max(500, "Importe no máximo 500 lançamentos por vez."),
+});
+
 export type ActionState = {
   error?: string;
   fieldErrors?: Record<string, string[]>;
@@ -300,3 +334,7 @@ export type DebtInput = z.infer<typeof debtSchema>;
 export type DebtPaymentInput = z.infer<typeof debtPaymentSchema>;
 export type AccountInput = z.infer<typeof accountSchema>;
 export type CategoryInput = z.infer<typeof categorySchema>;
+export type StatementImportInput = z.infer<typeof statementImportSchema>;
+export type StatementImportEntryInput = z.infer<
+  typeof statementImportEntrySchema
+>;

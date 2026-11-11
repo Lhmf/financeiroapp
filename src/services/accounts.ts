@@ -1,5 +1,8 @@
 import { prisma } from "@/lib/prisma";
-import { calculateAccountBalance } from "@/lib/finance";
+import {
+  calculateAccountBalance,
+  summarizeAccountBalances,
+} from "@/lib/finance";
 import type { AccountType } from "@/generated/prisma/enums";
 
 export async function listAccounts(userId: string) {
@@ -94,7 +97,7 @@ export async function getAccountBalances(
 
 export async function getTotalBalance(userId: string): Promise<number> {
   const accounts = await getAccountBalances(userId);
-  return accounts.reduce((total, account) => total + account.balanceCents, 0);
+  return summarizeAccountBalances(accounts).totalPatrimonyCents;
 }
 
 export async function accountHasRecords(userId: string, accountId: string) {

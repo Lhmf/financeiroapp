@@ -5,6 +5,7 @@ import {
   Clock3,
   CreditCard,
   PiggyBank,
+  TrendingUp,
   Wallet,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -65,7 +66,7 @@ function MetricCard({
           </p>
           <p
             className={cn(
-              "tabular mt-2 text-2xl font-semibold tracking-tight",
+              "tabular mt-2 text-2xl font-semibold tracking-tight xl:text-xl 2xl:text-2xl",
               primary ? "text-white" : "text-slate-900",
               valueClassName,
             )}
@@ -99,14 +100,22 @@ export function SummaryCards({ data }: { data: DashboardData }) {
 
   return (
     <div className="space-y-4">
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <MetricCard
-          label="Saldo atual"
-          value={formatCents(data.totalBalanceCents)}
-          hint="Somente dinheiro realizado"
+          label="Saldo em conta"
+          value={formatCents(data.accountBalanceCents)}
+          hint="Disponível para uso"
           icon={<Wallet className="h-4 w-4" />}
           tone="slate"
           variant="primary"
+        />
+        <MetricCard
+          label="Saldo investido"
+          value={formatCents(data.investedBalanceCents)}
+          hint="Poupança e investimentos"
+          icon={<TrendingUp className="h-4 w-4" />}
+          tone="violet"
+          valueClassName="text-violet-700"
         />
         <MetricCard
           label="Receitas recebidas"

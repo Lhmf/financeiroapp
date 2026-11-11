@@ -111,6 +111,7 @@ Server Actions com `"use server"`. Responsabilidades:
 ### `src/lib`
 
 - `finance.ts`: cálculos puros. Não importa Prisma nem React.
+- `statement.ts`: parsing puro de CSV/OFX, datas, valores, encoding, categorias sugeridas e detecção de transferências.
 - `money.ts`: parsing e formatação de centavos.
 - `dates.ts`: UTC, meses, intervalos e rótulos em português.
 - `validation.ts`: schemas Zod e tipo `ActionState`.
@@ -222,7 +223,8 @@ O app lida com dinheiro e dados privados. Qualquer cache de página ou de rota p
 
 - Sem paginação; listagens usam limite alto e filtros.
 - Sem testes de integração com banco no CI.
-- Sem importação de backup.
+- Sem importação de backup JSON.
+- A importação de extrato não cria transferências reais; movimentos internos são apenas sinalizados na prévia.
 - Sem recuperação de senha.
 - Sem verificação de e-mail.
 - Sem rate limiting específico para login.

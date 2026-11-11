@@ -68,6 +68,7 @@ Nunca use `findUnique({ where: { id } })` para decidir se pode alterar um regist
 - Categorias são validadas contra o tipo (`INCOME`/`EXPENSE`) e o usuário.
 - Contas são validadas contra o usuário.
 - Pagamentos de dívida são validados contra o saldo devedor.
+- A importação de extrato exige conta ativa do usuário, valida cada categoria pelo tipo e grava os lançamentos em transação.
 - A validação do cliente é apenas conveniência; a do servidor é a autoridade.
 
 ## Senhas
