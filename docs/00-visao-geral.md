@@ -30,7 +30,7 @@ O projeto prioriza **clareza sobre sofisticação**. A interface separa visualme
 | Despesas | CRUD, status pendente/paga, tipo, categoria, conta, parcelamento, forma de pagamento |
 | Dívidas | CRUD, pagamentos parciais, saldo devedor, progresso, quitação, histórico |
 | Contas | CRUD, saldo inicial, saldo calculado, separação conta/investimento, patrimônio total, arquivamento |
-| Importação | Extrato CSV/OFX com prévia, categorias sugeridas, seleção e deduplicação |
+| Importação | Extrato CSV/OFX/PDF com prévia, categorias sugeridas, seleção e deduplicação |
 | Categorias | Categorias padrão por usuário, criação, edição e exclusão |
 | Configurações | Nome do perfil, categorias e exportação JSON |
 | Qualidade | Testes unitários, smoke test E2E, lint, build, documentação |
@@ -74,7 +74,7 @@ O código está implementado no repositório local e validado contra um banco Ne
 | Conta arquivada | Conta preservada no histórico, mas indisponível para novas movimentações |
 | Saldo em conta | Soma das contas `CHECKING`, `CASH`, `CREDIT_CARD` e `OTHER` |
 | Saldo investido | Soma das contas `SAVINGS` e `INVESTMENT` |
-| Importação de extrato | Leitura de CSV/OFX com revisão antes de criar receitas e despesas |
+| Importação de extrato | Leitura de CSV/OFX/PDF com revisão antes de criar receitas e despesas |
 | Centavos | Unidade inteira usada para armazenar dinheiro, evitando erro de ponto flutuante |
 
 ## Documentos relacionados

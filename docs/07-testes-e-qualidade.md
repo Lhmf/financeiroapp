@@ -38,7 +38,8 @@ Cobrem:
 - percentuais e variação;
 - rejeição de forma de pagamento vazia em despesas e pagamentos de dívida;
 - separação entre saldo em conta e saldo investido;
-- parsing de CSV e OFX, datas, valores, encoding Windows-1252, categorias sugeridas e detecção de transferências;
+- parsing de CSV, OFX e PDF em texto, datas, valores, encoding Windows-1252, categorias sugeridas e detecção de transferências;
+- extração real de texto de PDF com `unpdf` e fixture `tests/fixtures/extrato.pdf`;
 - validação da prévia de importação e proteção por marcador.
 
 Rodar:
@@ -72,6 +73,8 @@ Arquivos:
 - `tests/e2e/auth.spec.ts` — smoke sem banco.
 - `tests/e2e/mvp.spec.ts` — fluxo completo com banco real, opt-in.
 - `tests/e2e/isolation.spec.ts` — isolamento entre dois usuários, opt-in e com limpeza automática.
+- `tests/e2e/import-pdf.spec.ts` — upload de PDF real, prévia e importação, opt-in e com limpeza automática.
+- `tests/e2e/agenda.spec.ts` — agenda, filtros e ações de pagar/receber, opt-in e com limpeza automática.
 
 O smoke cobre:
 
@@ -105,6 +108,15 @@ O teste de isolamento cobre:
 - acesso direto de B à URL de edição de A resultando em “Recurso não encontrado”;
 - remoção dos dois usuários temporários no `afterAll`, via conexão direta `pg`.
 
+O teste de importação de PDF cobre:
+
+- cadastro de usuário e conta;
+- upload de `tests/fixtures/extrato.pdf` no diálogo **Extrato**;
+- extração do texto no servidor, badge `PDF` e prévia com os três lançamentos;
+- transferência/aplicação desmarcada por padrão e importação de dois lançamentos;
+- conferência das despesas e receitas no mês do extrato;
+- remoção do usuário temporário no `afterAll`.
+
 Rodar o smoke:
 
 ```bash
@@ -124,6 +136,7 @@ Para rodar apenas o MVP ou apenas o isolamento, informe o arquivo:
 ```powershell
 npx playwright test tests/e2e/mvp.spec.ts --workers=1 --reporter=line
 npx playwright test tests/e2e/isolation.spec.ts --workers=1 --reporter=line
+npx playwright test tests/e2e/import-pdf.spec.ts --workers=1 --reporter=line
 ```
 
 Em Linux/macOS:
@@ -132,7 +145,7 @@ Em Linux/macOS:
 E2E_WITH_DB=1 npx playwright test tests/e2e/mvp.spec.ts --workers=1 --reporter=line
 ```
 
-O Playwright sobe `npm run dev` automaticamente, a menos que `PLAYWRIGHT_BASE_URL` esteja definido.
+O Playwright sobe `npm run dev` automaticamente, a menos que `PLAYWRIGHT_BASE_URL` esteja definido. Se o servidor local estiver em outra porta, defina `BETTER_AUTH_URL` para a mesma origem (por exemplo, `http://localhost:3002`) antes de iniciar o servidor; caso contrário o Better Auth recusa o cadastro com `Invalid origin`.
 
 > O teste com banco usa o usuário demo do seed, cria dados com nomes únicos e remove tudo o que criou. Ele não deve ser executado contra dados reais. O smoke de redirecionamento pode passar sem banco, pois o proxy/layout não encontra cookie e redireciona antes de consultar dados.
 
@@ -202,11 +215,13 @@ Os itens marcados já foram validados; os demais continuam pendentes. Depois de 
 ### Importação de extrato
 
 - [x] Importar CSV com débitos e créditos.
+- [x] Importar PDF com texto selecionável e conferir extração, prévia e valores.
 - [x] Conferir prévia e contagem de selecionados.
 - [x] Confirmar que aplicação/transferência vem desmarcada.
 - [x] Confirmar que o saldo em conta muda após importar.
 - [ ] Reimportar o mesmo arquivo e confirmar que não duplica.
 - [ ] Importar um OFX real de banco.
+- [ ] Importar um PDF real de banco com layout diferente do fixture.
 - [ ] Editar categoria por linha antes de importar.
 - [ ] Conferir CSV sem data usando o mês de referência.
 - [ ] Criar conta `SAVINGS`/`INVESTMENT` e conferir saldo investido separado.

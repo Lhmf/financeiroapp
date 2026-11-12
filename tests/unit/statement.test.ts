@@ -308,6 +308,165 @@ describe("parseStatementFile OFX", () => {
   });
 });
 
+describe("parseStatementFile PDF", () => {
+  it("lê data, descrição, valor e sinal em colunas com saldo", () => {
+    const pdf = `Data Descrição Valor
+10/11/2026 PIX RECEBIDO JOAO 1.000,00 C 2.500,00
+11/11/2026 COMPRA MERCADO 150,45 D 2.349,55
+12/11/2026 APLICACAO RDB 500,00 D 1.849,55
+13/11/2026 RENDIMENTO POUPANCA 12,34 C 1.861,89`;
+
+    const result = parseStatementFile(pdf, "extrato.pdf", {
+      fallbackDate: FALLBACK_DATE,
+      format: "pdf",
+    });
+
+    expect(result.format).toBe("pdf");
+    expect(result.entries).toHaveLength(4);
+    expect(result.entries[0]).toMatchObject({
+      date: "2026-11-10",
+      description: "PIX RECEBIDO JOAO",
+      amountCents: 100_000,
+      kind: "income",
+    });
+    expect(result.entries[1]).toMatchObject({
+      date: "2026-11-11",
+      description: "COMPRA MERCADO",
+      amountCents: 15_045,
+      kind: "expense",
+    });
+    expect(result.entries[2]).toMatchObject({
+      description: "APLICACAO RDB",
+      kind: "expense",
+      isTransfer: true,
+    });
+    expect(result.entries[3]).toMatchObject({
+      description: "RENDIMENTO POUPANCA",
+      amountCents: 1_234,
+      kind: "income",
+    });
+  });
+
+  it("acumula descrição em várias linhas até encontrar o valor", () => {
+    const pdf = `10/11/2026
+PIX RECEBIDO
+JOAO DA SILVA
+1.000,00 C
+11/11/2026
+COMPRA
+MERCADO CENTRO
+150,45 D`;
+
+    const result = parseStatementFile(pdf, "extrato.pdf", {
+      fallbackDate: FALLBACK_DATE,
+      format: "pdf",
+    });
+
+    expect(result.entries).toHaveLength(2);
+    expect(result.entries[0]).toMatchObject({
+      date: "2026-11-10",
+      description: "PIX RECEBIDO JOAO DA SILVA",
+      amountCents: 100_000,
+      kind: "income",
+    });
+    expect(result.entries[1]).toMatchObject({
+      date: "2026-11-11",
+      description: "COMPRA MERCADO CENTRO",
+      amountCents: 15_045,
+      kind: "expense",
+    });
+  });
+
+  it("usa a data de referência para datas curtas e para PDF sem data", () => {
+    const shortDates = parseStatementFile(
+      "05/11 LOJA X 50,00 D",
+      "extrato.pdf",
+      { fallbackDate: FALLBACK_DATE, format: "pdf" },
+    );
+    expect(shortDates.entries[0]).toMatchObject({
+      date: "2026-11-05",
+      amountCents: 5_000,
+      kind: "expense",
+    });
+
+    const withoutDates = parseStatementFile(
+      "COMPRA LOJA X 50,00",
+      "extrato.pdf",
+      { fallbackDate: FALLBACK_DATE, format: "pdf" },
+    );
+    expect(withoutDates.entries[0]).toMatchObject({
+      date: FALLBACK_DATE,
+      description: "COMPRA LOJA X",
+      kind: "expense",
+    });
+    expect(withoutDates.warnings.join(" ")).toContain(
+      "não trouxe datas legíveis",
+    );
+  });
+
+  it("não confunde datas na descrição com valores", () => {
+    const pdf = `10/11/2026 PAGAMENTO AGENDADO 12/11/2026 99,90 D
+11/11/2026 R$ -25,00 PIX ENVIADO`;
+
+    const result = parseStatementFile(pdf, "extrato.pdf", {
+      fallbackDate: FALLBACK_DATE,
+      format: "pdf",
+    });
+
+    expect(result.entries).toHaveLength(2);
+    expect(result.entries[0]).toMatchObject({
+      description: "PAGAMENTO AGENDADO 12/11/2026",
+      amountCents: 9_990,
+      kind: "expense",
+    });
+    expect(result.entries[1]).toMatchObject({
+      date: "2026-11-11",
+      description: "PIX ENVIADO",
+      amountCents: 2_500,
+      kind: "expense",
+    });
+  });
+
+  it("ignora valores ambíguos no modo automático e respeita a escolha manual", () => {
+    const pdf = "10/11/2026 LOJA X 50,00";
+
+    const automatic = parseStatementFile(pdf, "extrato.pdf", {
+      fallbackDate: FALLBACK_DATE,
+      format: "pdf",
+    });
+    expect(automatic.entries).toHaveLength(0);
+    expect(automatic.warnings.join(" ")).toContain("sem sinal ou tipo");
+
+    const asExpense = parseStatementFile(pdf, "extrato.pdf", {
+      fallbackDate: FALLBACK_DATE,
+      format: "pdf",
+      positiveMeans: "expense",
+    });
+    expect(asExpense.entries[0]).toMatchObject({
+      amountCents: 5_000,
+      kind: "expense",
+    });
+  });
+
+  it("reconhece a extensão .pdf e orienta quando não há lançamentos", () => {
+    const fromExtension = parseStatementFile(
+      "10/11/2026 COMPRA 10,00 D",
+      "EXTRATO.PDF",
+      { fallbackDate: FALLBACK_DATE },
+    );
+    expect(fromExtension.format).toBe("pdf");
+    expect(fromExtension.entries).toHaveLength(1);
+
+    const empty = parseStatementFile("Texto sem valores nem datas", "extrato.pdf", {
+      fallbackDate: FALLBACK_DATE,
+      format: "pdf",
+    });
+    expect(empty.entries).toHaveLength(0);
+    expect(empty.warnings[0]).toContain("Não encontramos lançamentos no PDF");
+    expect(empty.warnings[0]).toContain("CSV");
+  });
+});
+
 describe("isTransferDescription", () => {
   it("identifica aplicações, faturas, saques e transferências internas", () => {
     expect(isTransferDescription("Aplicação RDB")).toBe(true);

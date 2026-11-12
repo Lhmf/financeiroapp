@@ -111,7 +111,8 @@ Server Actions com `"use server"`. Responsabilidades:
 ### `src/lib`
 
 - `finance.ts`: cálculos puros. Não importa Prisma nem React.
-- `statement.ts`: parsing puro de CSV/OFX, datas, valores, encoding, categorias sugeridas e detecção de transferências.
+- `statement.ts`: parsing puro de CSV/OFX/PDF em texto, datas, valores, encoding, categorias sugeridas e detecção de transferências.
+- `statement-pdf.ts`: extração de texto de PDF com `unpdf`, executada apenas no servidor.
 - `money.ts`: parsing e formatação de centavos.
 - `dates.ts`: UTC, meses, intervalos e rótulos em português.
 - `validation.ts`: schemas Zod e tipo `ActionState`.

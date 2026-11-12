@@ -11,7 +11,7 @@ import {
   Wallet,
   X,
 } from "lucide-react";
-import { importStatement } from "@/actions/imports";
+import { importStatement, extractStatementPdfText } from "@/actions/imports";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -30,6 +30,7 @@ import {
 import { formatCents } from "@/lib/money";
 import {
   decodeStatementBuffer,
+  MAX_STATEMENT_FILE_BYTES,
   parseStatementFile,
   suggestCategoryId,
   type ParsedStatementEntry,
@@ -40,7 +41,6 @@ import {
 import { cn } from "@/lib/utils";
 import type { AccountType, CategoryType } from "@/generated/prisma/enums";
 
-const MAX_FILE_BYTES = 5 * 1024 * 1024;
 const INITIAL_VISIBLE_ENTRIES = 100;
 
 const POSITIVE_MEANS_OPTIONS: Array<{
@@ -113,6 +113,7 @@ export function StatementImportDialog({
   const positiveMeansFieldId = React.useId();
   const closeButtonRef = React.useRef<HTMLButtonElement>(null);
   const contentRef = React.useRef("");
+  const formatHintRef = React.useRef<StatementFormat | undefined>(undefined);
 
   const [accountId, setAccountId] = React.useState(accounts[0]?.id ?? "");
   const [month, setMonth] = React.useState(defaultMonth);
@@ -212,12 +213,14 @@ export function StatementImportDialog({
       name: string,
       monthValue: string,
       positiveMeansValue: StatementPositiveMeans,
+      formatHint: StatementFormat | undefined = formatHintRef.current,
     ) => {
       const monthDate = parseMonthKey(monthValue);
       const fallbackDate = toDateInput(monthDate ?? todayUTC());
       const parsed = parseStatementFile(content, name, {
         fallbackDate,
         positiveMeans: positiveMeansValue,
+        format: formatHint,
       });
 
       setFormat(parsed.format);
@@ -242,48 +245,65 @@ export function StatementImportDialog({
     [categories],
   );
 
+  function clearPreview(fileNameValue: string, message: string) {
+    contentRef.current = "";
+    formatHintRef.current = undefined;
+    setFileName(fileNameValue);
+    setFormat(null);
+    setEntries([]);
+    setWarnings([]);
+    setError(message);
+  }
+
   async function loadFile(file: File) {
     setError("");
     setResult(null);
 
-    if (file.size > MAX_FILE_BYTES) {
-      contentRef.current = "";
-      setFileName(file.name.slice(0, 180));
-      setFormat(null);
-      setEntries([]);
-      setWarnings([]);
-      setError("Arquivo muito grande. O limite é 5 MB.");
+    const safeName = file.name.slice(0, 180);
+
+    if (file.size > MAX_STATEMENT_FILE_BYTES) {
+      clearPreview(safeName, "Arquivo muito grande. O limite é 5 MB.");
       return;
     }
 
     setReading(true);
 
     try {
-      const buffer = await file.arrayBuffer();
-      const text = decodeStatementBuffer(buffer);
+      const isPdf =
+        file.type === "application/pdf" || /\.pdf$/i.test(file.name);
+      let text: string;
+      let formatHint: StatementFormat | undefined;
+
+      if (isPdf) {
+        const formData = new FormData();
+        formData.append("file", file);
+        const extraction = await extractStatementPdfText(formData);
+
+        if (!extraction.ok) {
+          clearPreview(safeName, extraction.error);
+          return;
+        }
+
+        text = extraction.text;
+        formatHint = "pdf";
+      } else {
+        const buffer = await file.arrayBuffer();
+        text = decodeStatementBuffer(buffer);
+      }
 
       if (!text.trim()) {
-        contentRef.current = "";
-        setFileName(file.name.slice(0, 180));
-        setFormat(null);
-        setEntries([]);
-        setWarnings([]);
-        setError("O arquivo está vazio.");
+        clearPreview(safeName, "O arquivo está vazio.");
         return;
       }
 
       contentRef.current = text;
-      const safeName = file.name.slice(0, 180);
+      formatHintRef.current = formatHint;
       setFileName(safeName);
-      analyze(text, safeName, month, positiveMeans);
+      analyze(text, safeName, month, positiveMeans, formatHint);
     } catch {
-      contentRef.current = "";
-      setFileName(file.name.slice(0, 180));
-      setFormat(null);
-      setEntries([]);
-      setWarnings([]);
-      setError(
-        "Não foi possível ler o arquivo. Verifique se ele é um CSV ou OFX válido.",
+      clearPreview(
+        safeName,
+        "Não foi possível ler o arquivo. Verifique se ele é um CSV, OFX ou PDF válido.",
       );
     } finally {
       setReading(false);
@@ -428,8 +448,8 @@ export function StatementImportDialog({
                 id={descriptionId}
                 className="mt-0.5 text-[11px] leading-relaxed text-slate-600"
               >
-                CSV ou OFX. O app identifica entradas, saídas e sugere
-                categorias antes de lançar.
+                CSV, OFX ou PDF com texto selecionável. O app identifica entradas,
+                saídas e sugere categorias antes de lançar.
               </p>
             </div>
           </div>
@@ -538,7 +558,7 @@ export function StatementImportDialog({
                     type="month"
                     value={month}
                     onChange={(event) => handleMonthChange(event.target.value)}
-                    disabled={importing}
+                    disabled={importing || reading}
                     required
                   />
                 </Field>
@@ -574,16 +594,17 @@ export function StatementImportDialog({
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-xs font-medium text-slate-800">
-                        {fileName || "Selecionar CSV ou OFX"}
+                        {fileName || "Selecionar CSV, OFX ou PDF"}
                       </span>
                       <span className="block text-[10px] text-slate-500">
-                        Arraste aqui ou clique. Limite de 5 MB.
+                        Arraste aqui ou clique. PDF precisa ter texto
+                        selecionável. Limite de 5 MB.
                       </span>
                     </span>
                     <input
                       id={fileInputId}
                       type="file"
-                      accept=".csv,.ofx,.qfx,.txt,text/csv,application/x-ofx,application/vnd.intu.qfx"
+                      accept=".csv,.ofx,.qfx,.txt,.pdf,text/csv,application/x-ofx,application/vnd.intu.qfx,application/pdf"
                       className="sr-only"
                       onChange={handleFileChange}
                       disabled={reading || importing}

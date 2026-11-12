@@ -1,6 +1,6 @@
 # FinanceiroApp
 
-Sistema pessoal de controle financeiro multiusuário, com dashboard, receitas, despesas, dívidas e contas. O app separa **dinheiro realizado** de **valores previstos**, importa extratos CSV/OFX e impede que o pagamento de uma dívida seja contado duas vezes no caixa.
+Sistema pessoal de controle financeiro multiusuário, com dashboard, receitas, despesas, dívidas e contas. O app separa **dinheiro realizado** de **valores previstos**, importa extratos CSV/OFX/PDF e impede que o pagamento de uma dívida seja contado duas vezes no caixa.
 
 > **Status:** MVP implementado e validado contra um banco Neon de desenvolvimento. Migração e seed aplicados. O projeto Neon foi reivindicado e o `.env` local já usa as conexões pooled e direta atualizadas. Há um **deploy de validação** na Vercel usando o banco de desenvolvimento. Veja [Estado atual](#estado-atual).
 
@@ -16,7 +16,7 @@ Sistema pessoal de controle financeiro multiusuário, com dashboard, receitas, d
 - CRUD de despesas com status **pendente/paga**, tipo, forma de pagamento e parcelamento.
 - CRUD de dívidas com pagamentos parciais, saldo devedor, progresso e quitação.
 - CRUD de contas com saldo inicial, saldo calculado e arquivamento. Poupança e investimento compõem o saldo investido; os demais tipos compõem o saldo em conta.
-- Importação de extrato CSV/OFX pelo cabeçalho, com prévia, sugestão de categoria, seleção de lançamentos e proteção contra reimportação.
+- Importação de extrato CSV/OFX/PDF pelo cabeçalho, com prévia, sugestão de categoria, seleção de lançamentos e proteção contra reimportação.
 - Categorias padrão por usuário e gestão de categorias.
 - Exportação dos dados em JSON.
 - Interface responsiva com navegação mobile.
@@ -208,7 +208,7 @@ Implementado e verificado contra um banco Neon real (reivindicado, região `aws-
 - Migration `20261110161632_init` aplicada.
 - Seed demo aplicado; o usuário `demo@financeiro.local` existe, mas o login é rejeitado pela validação de e-mail (`.local` não é um domínio aceito). Para testar, crie uma conta com e-mail válido.
 - Dashboard conferido no banco de desenvolvimento em novembro de 2026: saldo em conta de **R$ 1.181,00**, saldo investido de **R$ 10.000,00**, patrimônio total de **R$ 11.181,00**, despesas pagas de **R$ 3.619,00** e resultado de **−R$ 3.619,00**. O dashboard separa os dois saldos; a página de contas mostra o patrimônio total.
-- Importação de extrato validada em Playwright com CSV de três linhas: prévia, transferência desmarcada por padrão, importação de dois lançamentos e console sem erros. A cobertura permanente do parser está em `tests/unit/statement.test.ts`.
+- Importação de extrato validada em Playwright com CSV de três linhas: prévia, transferência desmarcada por padrão, importação de dois lançamentos e console sem erros. A cobertura permanente do parser está em `tests/unit/statement.test.ts` e a extração real de PDF em `tests/unit/statement-pdf.test.ts`, com o fixture `tests/fixtures/extrato.pdf`.
 - Agenda financeira implementada com calendário, lista combinada, filtros por tipo/dia e páginas dedicadas de contas a pagar e a receber. O lembrete por e-mail está codificado em `/api/cron/reminders`, agendado em `vercel.json`; depende de SMTP e `CRON_SECRET` para enviar.
 - Deploy de validação na Vercel em [https://financeiroapp-orcin.vercel.app](https://financeiroapp-orcin.vercel.app), projeto `the-castilho/financeiroapp`, conectado ao GitHub. Signup, dashboard, menu mobile, logout/login e contraste do saldo foram validados; o console ficou limpo no teste automatizado.
 - Pagamento de dívida com despesa vinculada não é contado duas vezes; a despesa e o pagamento têm o mesmo valor e a conta não sofre dupla saída.
@@ -249,7 +249,7 @@ Leia [docs/05-autenticacao-e-seguranca.md](./docs/05-autenticacao-e-seguranca.md
 - Sem testes de integração com banco no CI.
 - Lembretes por e-mail dependem de SMTP configurado; sem isso o cron não envia mensagens.
 - Sem transferências entre contas: o importador sinaliza e desmarca movimentos internos, mas importá-los cria receita/despesa.
-- A importação cobre CSV e OFX comuns; layouts bancários muito específicos podem exigir ajuste no parser.
+- A importação cobre CSV, OFX e PDFs com texto selecionável; layouts bancários muito específicos podem exigir ajuste no parser. PDFs digitalizados (somente imagem) precisam de OCR ou de exportação em CSV/OFX.
 - Não importe o extrato da conta e a fatura do cartão ao mesmo tempo: compras do cartão e pagamento da fatura podem duplicar a saída.
 - Sem orçamento ou metas.
 

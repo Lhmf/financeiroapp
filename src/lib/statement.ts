@@ -1,19 +1,24 @@
 import { parseDateInput, todayUTC, toDateInput } from "./dates";
 
 /**
- * Leitura e normalização de extratos bancários em CSV e OFX.
+ * Leitura e normalização de extratos bancários em CSV, OFX e PDF.
  *
  * O parser é puro para poder ser testado sem banco e executado no navegador.
+ * O PDF é convertido em texto por uma Server Action antes de chegar aqui; a
+ * prévia continua sendo revisada antes da importação.
+ *
  * Ele não grava nada: a prévia é revisada antes da Server Action importar.
  */
 
 export const MAX_STATEMENT_ENTRIES = 500;
+export const MAX_STATEMENT_FILE_BYTES = 5 * 1024 * 1024;
+export const MAX_STATEMENT_PDF_PAGES = 40;
 const AMOUNT_LIMIT_CENTS = 9_999_999_999;
 const MAX_WARNINGS = 6;
 
 export type StatementEntryKind = "income" | "expense";
 export type StatementPositiveMeans = "auto" | "income" | "expense";
-export type StatementFormat = "csv" | "ofx";
+export type StatementFormat = "csv" | "ofx" | "pdf";
 
 export type ParsedStatementEntry = {
   /** Índice estável dentro do arquivo, usado na proteção contra reimportação. */
@@ -41,7 +46,13 @@ export type ParseStatementOptions = {
   fallbackDate?: string;
   positiveMeans?: StatementPositiveMeans;
   maxEntries?: number;
+  /** Quando informado, evita detectar o formato só pelo conteúdo. */
+  format?: StatementFormat;
 };
+
+export type StatementPdfTextResult =
+  | { ok: true; text: string }
+  | { ok: false; error: string };
 
 export type ParsedStatementAmount = {
   cents: number;
@@ -562,7 +573,7 @@ export function suggestCategoryId(
   );
 }
 
-/** Lê o arquivo e decide entre CSV e OFX pelo conteúdo/extensão. */
+/** Lê o arquivo e decide entre CSV, OFX e PDF pelo conteúdo/extensão. */
 export function parseStatementFile(
   content: string,
   fileName: string,
@@ -578,11 +589,19 @@ export function parseStatementFile(
     Math.min(options.maxEntries ?? MAX_STATEMENT_ENTRIES, MAX_STATEMENT_ENTRIES),
   );
 
+  const pdfExtension = /\.pdf$/i.test(fileName.trim());
+  if (options.format === "pdf" || pdfExtension) {
+    return {
+      format: "pdf",
+      ...parsePdf(content, fallbackDate, positiveMeans, maxEntries),
+    };
+  }
+
   const looksLikeOfx =
     /<OFX[\s>]/i.test(content) || /<STMTTRN\b/i.test(content);
   const ofxExtension = /\.(ofx|qfx)$/i.test(fileName);
 
-  if (looksLikeOfx || ofxExtension) {
+  if (options.format === "ofx" || looksLikeOfx || ofxExtension) {
     return {
       format: "ofx",
       ...parseOfx(content, fallbackDate, maxEntries),
@@ -626,7 +645,7 @@ function parseCsv(
     return {
       entries: [],
       warnings: [
-        "Não encontramos as colunas de data, descrição e valor. Exporte o extrato em CSV com cabeçalho.",
+        "Não encontramos as colunas de data, descrição e valor. Exporte o extrato em CSV com cabeçalho, por exemplo: Data;Descrição;Valor.",
       ],
     };
   }
@@ -830,6 +849,355 @@ function parseOfx(
   }
 
   return { entries, warnings };
+}
+
+type PdfAmountMatch = {
+  index: number;
+  text: string;
+  parsed: ParsedStatementAmount;
+};
+
+type PdfPendingEntry = {
+  date: string;
+  parts: string[];
+};
+
+const PDF_DATE_PREFIX =
+  /^\s*(?:\d{4,10}\s+)?(\d{1,2}[/.-]\d{1,2}(?:[/.-]\d{2,4})?|\d{4}-\d{2}-\d{2})\b/;
+const PDF_DATE_LIKE = /\b\d{1,4}[/.-]\d{1,2}(?:[/.-]\d{2,4})?\b/g;
+const PDF_AMOUNT_PATTERN =
+  /(?:[+-]\s*)?(?:R\$\s*)?[+-]?\s?(?:\d{1,3}(?:\.\d{3})+,\d{2}|\d{1,3}(?:,\d{3})+\.\d{2}|\d+,\d{2}|\d+\.\d{2})(?:\s*[DC])?-?/gi;
+
+/**
+ * PDFs são extraídos para texto antes de chegar ao parser. Como cada banco
+ * desenha a tabela de um jeito, a leitura é heurística: procuramos uma data no
+ * início da linha, acumulamos a descrição (inclusive em várias linhas) e
+ * escolhemos o primeiro valor monetário depois dela. O saldo, quando aparece na
+ * mesma linha, fica de fora.
+ */
+function parsePdf(
+  content: string,
+  fallbackDate: string,
+  positiveMeans: StatementPositiveMeans,
+  maxEntries: number,
+): { entries: ParsedStatementEntry[]; warnings: string[] } {
+  const warnings: string[] = [];
+  const entries: ParsedStatementEntry[] = [];
+  const lines = normalizePdfLines(content);
+  let pending: PdfPendingEntry | null = null;
+  let pendingWithoutAmount = 0;
+  let invalidDates = 0;
+  let ambiguous = 0;
+  let limitWarned = false;
+  const undated: Array<{ text: string }> = [];
+
+  function warnLimit() {
+    if (limitWarned) return;
+    addWarning(
+      warnings,
+      `Limite de ${maxEntries} lançamentos por importação; os demais foram ignorados.`,
+    );
+    limitWarned = true;
+  }
+
+  function pushEntry(
+    date: string,
+    description: string,
+    amount: PdfAmountMatch,
+    lineText: string,
+  ) {
+    if (entries.length >= maxEntries) {
+      warnLimit();
+      return;
+    }
+
+    const cleaned = cleanPdfDescription(description);
+    if (isSummaryDescription(cleaned)) return;
+
+    let sign = amount.parsed.sign;
+    let explicit = amount.parsed.explicitSign;
+
+    if (!explicit) {
+      const tail = lineText.slice(amount.index + amount.text.length);
+      const typeSign = pdfSignMarker(tail) || pdfSignMarker(lineText);
+      if (typeSign !== 0) {
+        sign = typeSign;
+        explicit = true;
+      }
+    }
+    if (!explicit) {
+      const descriptionSign = signFromDescription(cleaned);
+      if (descriptionSign !== 0) {
+        sign = descriptionSign;
+        explicit = true;
+      }
+    }
+    if (!explicit) {
+      if (positiveMeans === "income") {
+        sign = 1;
+      } else if (positiveMeans === "expense") {
+        sign = -1;
+      } else {
+        ambiguous += 1;
+        return;
+      }
+    }
+
+    entries.push({
+      sourceIndex: entries.length + 1,
+      date,
+      description: cleanStatementDescription(cleaned),
+      amountCents: amount.parsed.cents,
+      kind: sign < 0 ? "expense" : "income",
+      isTransfer: isTransferDescription(cleaned),
+    });
+  }
+
+  for (let index = 0; index < lines.length; index += 1) {
+    if (entries.length >= maxEntries) {
+      warnLimit();
+      break;
+    }
+
+    const line = lines[index];
+    if (isPdfHeaderLine(line)) continue;
+
+    const datePrefix = PDF_DATE_PREFIX.exec(line);
+    if (datePrefix) {
+      const date = parsePdfDate(datePrefix[1], fallbackDate);
+      if (!date) {
+        invalidDates += 1;
+        if (pending) {
+          pendingWithoutAmount += 1;
+          pending = null;
+        }
+        continue;
+      }
+
+      if (pending) {
+        pendingWithoutAmount += 1;
+        pending = null;
+      }
+
+      const rest = line.slice(datePrefix[0].length).trim();
+      const amounts = findPdfAmounts(rest);
+
+      if (amounts.length === 0) {
+        pending = { date, parts: rest ? [rest] : [] };
+        continue;
+      }
+
+      const amount = amounts[0];
+      const before = cleanPdfDescription(rest.slice(0, amount.index));
+      let description = before;
+      if (!before || /^[dc]$/i.test(before)) {
+        const after = cleanPdfDescription(
+          rest.slice(amount.index + amount.text.length),
+        );
+        if (/[A-Za-zÀ-ÿ]{2}/.test(after)) description = after;
+      }
+
+      pushEntry(date, description, amount, rest);
+      continue;
+    }
+
+    const amounts = findPdfAmounts(line);
+
+    if (!pending) {
+      if (amounts.length > 0) undated.push({ text: line });
+      continue;
+    }
+
+    if (amounts.length === 0) {
+      const continuation = cleanPdfDescription(line);
+      if (
+        pending.parts.length >= 4 ||
+        pending.parts.join(" ").length > 240
+      ) {
+        pendingWithoutAmount += 1;
+        pending = null;
+      } else if (continuation) {
+        pending.parts.push(continuation);
+      }
+      continue;
+    }
+
+    const amount = amounts[0];
+    const lineBefore = cleanPdfDescription(line.slice(0, amount.index));
+    const description = [...pending.parts, lineBefore]
+      .filter(Boolean)
+      .join(" ");
+    pushEntry(pending.date, description, amount, line);
+    pending = null;
+  }
+
+  if (pending) pendingWithoutAmount += 1;
+
+  if (pendingWithoutAmount > 0) {
+    addWarning(
+      warnings,
+      `${pendingWithoutAmount} lançamento(s) sem valor foram ignorados.`,
+    );
+  }
+  if (invalidDates > 0) {
+    addWarning(
+      warnings,
+      `${invalidDates} linha(s) com data inválida foram ignoradas.`,
+    );
+  }
+  if (ambiguous > 0) {
+    addWarning(
+      warnings,
+      `${ambiguous} lançamento(s) sem sinal ou tipo foram ignorados. Em “Valores positivos”, escolha Entradas ou Saídas para importá-los.`,
+    );
+  }
+
+  if (entries.length === 0 && undated.length > 0) {
+    addWarning(
+      warnings,
+      "O PDF não trouxe datas legíveis; foi usada a data de referência do mês.",
+    );
+
+    for (const candidate of undated) {
+      if (entries.length >= maxEntries) {
+        warnLimit();
+        break;
+      }
+
+      const amounts = findPdfAmounts(candidate.text);
+      if (amounts.length === 0) continue;
+
+      const amount = amounts[0];
+      const before = cleanPdfDescription(candidate.text.slice(0, amount.index));
+      let description = before;
+      if (!before || /^[dc]$/i.test(before)) {
+        const after = cleanPdfDescription(
+          candidate.text.slice(amount.index + amount.text.length),
+        );
+        if (/[A-Za-zÀ-ÿ]{2}/.test(after)) description = after;
+      }
+
+      pushEntry(fallbackDate, description, amount, candidate.text);
+    }
+  }
+
+  if (entries.length === 0) {
+    warnings.unshift(
+      "Não encontramos lançamentos no PDF. Verifique se o texto é selecionável; se o arquivo for digitalizado, exporte em CSV com cabeçalho (Data;Descrição;Valor).",
+    );
+  }
+
+  return { entries, warnings };
+}
+
+function normalizePdfLines(content: string): string[] {
+  return content
+    .replace(/\r\n?/g, "\n")
+    .replace(/\u00a0/g, " ")
+    .split("\n")
+    .map((line) => line.replace(/[ \t]+/g, " ").trim())
+    .filter((line) => line.length > 0);
+}
+
+function maskPdfDateLike(value: string): string {
+  return value.replace(
+    new RegExp(PDF_DATE_LIKE.source, "g"),
+    (match) => " ".repeat(match.length),
+  );
+}
+
+function findPdfAmounts(value: string): PdfAmountMatch[] {
+  const masked = maskPdfDateLike(value);
+  const pattern = new RegExp(PDF_AMOUNT_PATTERN.source, "gi");
+  const matches: PdfAmountMatch[] = [];
+  let match: RegExpExecArray | null;
+
+  while ((match = pattern.exec(masked)) !== null) {
+    const parsed = parseStatementAmount(match[0]);
+    if (!parsed) continue;
+
+    let adjusted = parsed;
+    const before = value[match.index - 1];
+    const after = value[match.index + match[0].length];
+    if (before === "(" && after === ")") {
+      adjusted = { ...parsed, sign: -1, explicitSign: true };
+    }
+
+    matches.push({ index: match.index, text: match[0], parsed: adjusted });
+  }
+
+  return matches;
+}
+
+function pdfSignMarker(value: string): 1 | -1 | 0 {
+  const markers = value.match(/\b[DC]\b/gi);
+  if (!markers) return 0;
+
+  for (const marker of markers) {
+    if (marker.toUpperCase() === "D") return -1;
+  }
+  for (const marker of markers) {
+    if (marker.toUpperCase() === "C") return 1;
+  }
+  return 0;
+}
+
+function parsePdfDate(raw: string, fallbackDate: string): string | null {
+  const full = parseStatementDate(raw);
+  if (full) return full;
+
+  const short = /^(\d{1,2})[/.-](\d{1,2})$/.exec(raw.trim());
+  if (!short) return null;
+
+  const first = Number(short[1]);
+  const second = Number(short[2]);
+  let day = first;
+  let month = second;
+
+  if (first > 12 && second <= 12) {
+    day = first;
+    month = second;
+  } else if (second > 12 && first <= 12) {
+    day = second;
+    month = first;
+  }
+
+  const fallback = parseDateInput(fallbackDate) ?? todayUTC();
+  const fallbackMonth = fallback.getUTCMonth() + 1;
+  let year = fallback.getUTCFullYear();
+
+  if (month - fallbackMonth > 6) year -= 1;
+  else if (fallbackMonth - month > 6) year += 1;
+
+  const key = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+  return parseDateInput(key) ? key : null;
+}
+
+function cleanPdfDescription(value: string): string {
+  return value
+    .replace(/\u00a0/g, " ")
+    .replace(/[|•·]+/g, " ")
+    .replace(/\s+/g, " ")
+    .replace(/\s+[DC]$/i, "")
+    .replace(/^[\s:;,\-–—]+/, "")
+    .replace(/[\s:;,\-–—]+$/, "")
+    .trim();
+}
+
+function isPdfHeaderLine(value: string): boolean {
+  const text = normalizeStatementText(value);
+  if (!text) return true;
+
+  if (
+    /^(data|date)\b/.test(text) &&
+    /(descricao|historico|description|valor|amount|saldo)/.test(text)
+  ) {
+    return true;
+  }
+
+  return /^(extrato|resumo|total|saldo|conta corrente|agencia|periodo|pagina)\b/.test(
+    text,
+  );
 }
 
 function ofxTag(block: string, tag: string): string {

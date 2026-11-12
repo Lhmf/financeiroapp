@@ -191,18 +191,22 @@ Caso contrário, a ação redireciona com erro e orienta arquivar.
 
 ### Importação de extrato
 
-O botão **Extrato** no cabeçalho abre a importação. O arquivo é lido no navegador e o usuário revisa a prévia antes de qualquer escrita.
+O botão **Extrato** no cabeçalho abre a importação. CSV e OFX são lidos no navegador; o PDF tem o texto extraído no servidor, sem gravar o arquivo. O usuário revisa a prévia antes de qualquer escrita.
 
-- Formatos: CSV e OFX.
-- Limites: 5 MB e 500 lançamentos por importação.
+- Formatos: CSV, OFX e PDF com texto selecionável.
+- Limites: 5 MB e 500 lançamentos por importação; PDFs com mais de 40 páginas são recusados.
 - O CSV aceita `;`, `,` ou tabulação, campos entre aspas, UTF-8 e Windows-1252.
+- O PDF precisa ter texto selecionável. Arquivos digitalizados (somente imagem) exigem OCR e não são suportados.
 - Créditos viram `Income` com `status = RECEIVED`; débitos viram `Expense` com `status = PAID`.
 - A conta escolhida precisa estar ativa e pertencer ao usuário.
 - As datas reais do extrato são preservadas. Se o arquivo não tiver data, usa-se o primeiro dia do mês de referência.
 - Categorias são sugeridas por palavras-chave e podem ser alteradas ou deixadas em branco.
-- Valores sem sinal e sem coluna de tipo são tratados como crédito por padrão; a prévia avisa e permite marcar que positivos são despesas.
+- No CSV, valores sem sinal e sem coluna de tipo são tratados como crédito por padrão; a prévia avisa e permite marcar que positivos são despesas.
+- No PDF, valores sem sinal, marcação `D`/`C` ou palavra-chave de entrada/saída são ignorados no modo automático; a prévia avisa e o usuário pode escolher “Valores positivos são entradas” ou “saídas”.
 - Aplicações/resgates, faturas/cartão, saques/depósitos e transferências entre contas próprias são sinalizados e **desmarcados por padrão**.
 - Reimportações usam um marcador em `notes` para ignorar linhas já importadas.
+
+**Leitura de PDF:** o parser procura uma data no início da linha, acumula a descrição (inclusive em várias linhas) e usa o primeiro valor monetário encontrado depois dela. Quando o PDF traz saldo na mesma linha, o saldo é ignorado. A ordem e o formato das colunas variam entre bancos; se um layout específico não for reconhecido, exporte o mesmo extrato em CSV.
 
 **Limitação:** o app ainda não tem transferência real entre contas. Se o usuário marcar uma transferência na prévia, ela será gravada como receita ou despesa e afetará o resultado. Também não concilie o extrato da conta e a fatura do cartão ao mesmo tempo: as compras do cartão e o pagamento da fatura podem duplicar a saída. Renomear o arquivo ou editar o `notes` de um lançamento pode impedir o reconhecimento na reimportação. O importador é uma conveniência de digitação, não uma conciliação bancária.
 
@@ -273,8 +277,11 @@ O botão **Extrato** no cabeçalho abre a importação. O arquivo é lido no nav
 | Mês sem lançamentos | Indicadores zerados; estado vazio nas listas |
 | Total de categoria zero | Percentual 0, sem divisão por zero |
 | Arquivo de extrato acima de 5 MB | Rejeitado no navegador com mensagem |
+| PDF com mais de 40 páginas | Rejeitado com mensagem |
+| PDF digitalizado, sem texto selecionável | Rejeitado com orientação para usar CSV/OFX |
 | Extrato com mais de 500 linhas | Primeiras 500 são lidas; a prévia avisa |
 | CSV sem coluna de data | Usa o primeiro dia do mês de referência |
+| PDF sem data legível | Usa o primeiro dia do mês de referência e avisa |
 | Linha de transferência/aplicação | Marcada e desmarcada por padrão |
 | Mesmo extrato reimportado | Marcador em `notes` ignora linhas já gravadas |
 | Arquivo reimportado com outro nome | O marcador muda e pode duplicar |

@@ -157,13 +157,13 @@ Abra [http://localhost:3000](http://localhost:3000). A raiz redireciona para log
 
 1. Entre no app e clique em **Extrato**, ao lado do avatar.
 2. Selecione uma conta ativa. Se ainda não houver conta, crie uma em `/contas/nova`.
-3. Envie um arquivo CSV ou OFX de até 5 MB.
+3. Envie um arquivo CSV, OFX ou PDF de até 5 MB. O PDF precisa ter texto selecionável.
 4. Revise a prévia: desmarque o que não quiser, ajuste categorias e confirme o mês de referência.
 5. Clique em **Importar N lançamentos**.
 
-Créditos entram como receitas recebidas e débitos como despesas pagas. As datas do arquivo são preservadas. Transferências, aplicações, faturas, saques e depósitos são sinalizados e desmarcados por padrão. O limite é de 500 lançamentos por importação.
+Créditos entram como receitas recebidas e débitos como despesas pagas. As datas do arquivo são preservadas. Transferências, aplicações, faturas, saques e depósitos são sinalizados e desmarcados por padrão. O limite é de 500 lançamentos por importação e 40 páginas por PDF.
 
-Não há variável de ambiente ou dependência nova para importar. O processamento inicial é local no navegador; a gravação passa por uma Server Action autenticada, valida ownership da conta e da categoria e grava receitas/despesas em uma transação.
+Não há variável de ambiente nova para importar. CSV e OFX são processados no navegador; o PDF é enviado a uma Server Action autenticada, que extrai o texto com `unpdf` e devolve apenas o texto para a prévia. A gravação passa por outra Server Action autenticada, valida ownership da conta e da categoria e grava receitas/despesas em uma transação. O arquivo PDF não é armazenado. O limite de corpo das Server Actions está configurado para 6 MB em `next.config.ts` por causa do limite de 5 MB do PDF.
 
 ### Lembretes por e-mail
 
@@ -263,7 +263,7 @@ Se conectar, mostra o status das migrações. Se falhar, confira:
 7. Confira que o pagamento não aparece duas vezes no saldo.
 8. Recarregue a página e confirme a persistência.
 9. Crie uma conta `SAVINGS` ou `INVESTMENT` e confira o card **Saldo investido**.
-10. Importe um CSV de teste pelo botão **Extrato** e confira a prévia, a transferência desmarcada e os lançamentos criados.
+10. Importe um CSV ou PDF de teste pelo botão **Extrato** e confira a prévia, a transferência desmarcada e os lançamentos criados.
 11. Reimporte o mesmo arquivo e confirme que os itens já existentes são ignorados.
 12. Exporte o JSON em Configurações.
 13. Saia e entre novamente.

@@ -156,7 +156,7 @@
 
 ### D20 — Importação de extrato e saldos separados
 
-**Decisão:** importar CSV/OFX com prévia e gravar apenas receitas recebidas e despesas pagas; separar o patrimônio em saldo em conta e saldo investido pelo `AccountType`.
+**Decisão:** importar CSV/OFX/PDF com prévia e gravar apenas receitas recebidas e despesas pagas; separar o patrimônio em saldo em conta e saldo investido pelo `AccountType`.
 
 **Motivo:** reduzir digitação e deixar claro quanto está disponível em conta e quanto está em poupança/investimento, sem criar tabelas ou dependências novas.
 
@@ -168,7 +168,15 @@
 
 **Motivo:** oferecer uma visão operacional de curto prazo sem duplicar lançamentos, criar tabelas de agenda ou misturar previsto com realizado. Reutilizar os status existentes mantém os cálculos financeiros intactos.
 
-**Consequência:** a agenda é somente leitura sobre os lançamentos; pagar/receber continua usando as ações existentes. `vercel.json` agenda uma chamada diária às 12:00 UTC. Sem `EMAIL_SMTP_HOST`/`EMAIL_FROM`, o cron não envia e-mails; sem `CRON_SECRET`, a rota responde `401`. O `nodemailer` é a única dependência nova.
+**Consequência:** a agenda é somente leitura sobre os lançamentos; pagar/receber continua usando as ações existentes. `vercel.json` agenda uma chamada diária às 12:00 UTC. Sem `EMAIL_SMTP_HOST`/`EMAIL_FROM`, o cron não envia e-mails; sem `CRON_SECRET`, a rota responde `401`. `nodemailer` e `unpdf` são as dependências novas.
+
+### D22 — Importação de PDF
+
+**Decisão:** aceitar PDF com texto selecionável no mesmo fluxo de prévia do CSV/OFX. O binário é enviado a uma Server Action autenticada, que extrai o texto com `unpdf` e devolve apenas o texto; o parser puro heurístico monta os lançamentos no navegador. Limites: 5 MB, 40 páginas e 500 lançamentos.
+
+**Motivo:** muitos bancos oferecem o extrato apenas em PDF. Fazer a extração no servidor evita enviar PDF.js ao cliente e mantém o parser testável sem navegador. Não é necessário alterar o schema.
+
+**Consequência:** PDFs digitalizados (somente imagem) não são suportados e recebem orientação para exportar CSV/OFX. O limite de corpo das Server Actions foi elevado para 6 MB. Layouts bancários muito diferentes podem exigir ajuste na heurística de data/descrição/valor. O arquivo não é armazenado nem gera transferências reais.
 
 ## Roadmap
 
@@ -181,7 +189,7 @@
 - [x] Dashboard, receitas, despesas, dívidas, contas e configurações.
 - [x] Regras financeiras puras e testadas.
 - [x] Exportação JSON.
-- [x] Importação de extrato CSV/OFX com prévia.
+- [x] Importação de extrato CSV/OFX/PDF com prévia.
 - [x] Saldo em conta separado do saldo investido.
 - [x] Testes unitários e smoke E2E.
 - [x] Documentação em português.

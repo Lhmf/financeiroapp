@@ -6,9 +6,13 @@ import { requireUser } from "@/lib/session";
 import { revalidateFinance } from "@/lib/revalidate";
 import { parseDateInput } from "@/lib/dates";
 import {
+  MAX_STATEMENT_FILE_BYTES,
+  MAX_STATEMENT_PDF_PAGES,
   normalizeStatementText,
   type StatementImportResult,
+  type StatementPdfTextResult,
 } from "@/lib/statement";
+import { extractPdfText } from "@/lib/statement-pdf";
 import {
   statementImportSchema,
   validationError,
@@ -57,6 +61,63 @@ function extractMarker(notes: string | null): string | null {
 
 function safeFileName(fileName: string): string {
   return fileName.replace(/["\r\n]/g, "'").slice(0, NOTE_FILE_NAME_LIMIT);
+}
+
+/**
+ * Extrai o texto de um PDF no servidor. O cliente não envia o binário para o
+ * banco: o texto volta apenas para montar a prévia local, que depois é revisada
+ * e importada pela action `importStatement`.
+ */
+export async function extractStatementPdfText(
+  formData: FormData,
+): Promise<StatementPdfTextResult> {
+  await requireUser();
+
+  const file = formData.get("file");
+  if (!(file instanceof File)) {
+    return { ok: false, error: "Selecione um arquivo PDF." };
+  }
+  if (file.size === 0) {
+    return { ok: false, error: "O arquivo está vazio." };
+  }
+  if (file.size > MAX_STATEMENT_FILE_BYTES) {
+    return { ok: false, error: "Arquivo muito grande. O limite é 5 MB." };
+  }
+
+  const buffer = await file.arrayBuffer();
+  const head = new TextDecoder("latin1").decode(
+    buffer.slice(0, Math.min(buffer.byteLength, 1024)),
+  );
+  if (!head.includes("%PDF-")) {
+    return { ok: false, error: "O arquivo não parece ser um PDF válido." };
+  }
+
+  try {
+    const text = await extractPdfText(buffer);
+    if (!text.trim()) {
+      return {
+        ok: false,
+        error:
+          "O PDF não tem texto selecionável. Se ele for digitalizado, exporte o extrato em CSV ou OFX.",
+      };
+    }
+    return { ok: true, text };
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message === "statement-pdf-too-many-pages"
+    ) {
+      return {
+        ok: false,
+        error: `O PDF tem mais de ${MAX_STATEMENT_PDF_PAGES} páginas. Envie um período menor.`,
+      };
+    }
+    return {
+      ok: false,
+      error:
+        "Não foi possível ler o PDF. Verifique se ele está protegido por senha ou exporte o extrato em CSV/OFX.",
+    };
+  }
 }
 
 /**

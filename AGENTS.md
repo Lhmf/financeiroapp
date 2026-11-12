@@ -103,7 +103,7 @@ Mantenha o README e o AGENTS.md coerentes.
 - Corrija a causa, não o teste, salvo se o teste estiver errado.
 - Rode `npm test`, `npm run lint`, `npx tsc --noEmit` e `npm run build` antes de concluir.
 - Testes E2E com banco exigem `DATABASE_URL` real e o seed demo.
-- O teste completo é opt-in: `E2E_WITH_DB=1 npx playwright test tests/e2e/mvp.spec.ts tests/e2e/isolation.spec.ts`.
+- O teste completo é opt-in: `E2E_WITH_DB=1 npx playwright test tests/e2e/mvp.spec.ts tests/e2e/isolation.spec.ts tests/e2e/import-pdf.spec.ts`.
 - Não use dados reais de produção em testes.
 
 ## Git
@@ -128,7 +128,7 @@ Mantenha o README e o AGENTS.md coerentes.
 - A migration `20261110161632_init` foi aplicada e o seed demo foi executado contra esse banco.
 - O projeto Neon `flat-queen-78874900` foi reivindicado em 10/11/2026 e as conexões pooled/direta foram atualizadas. O banco continua sendo de desenvolvimento, não produção.
 - O seed demo é `demo@financeiro.local` / `demo12345`, mas o login com esse domínio `.local` é rejeitado pela validação atual do Better Auth; use e-mail válido em testes.
-- A importação de extrato CSV/OFX está implementada no cabeçalho (`Extrato`), com parser em `src/lib/statement.ts`, action em `src/actions/imports.ts` e prévia em `src/components/imports/`. Ela não altera o schema; usa `notes` para deduplicar.
+- A importação de extrato CSV/OFX/PDF está implementada no cabeçalho (`Extrato`), com parser em `src/lib/statement.ts`, action em `src/actions/imports.ts` e prévia em `src/components/imports/`. Ela não altera o schema; usa `notes` para deduplicar. PDFs com texto selecionável passam por `src/lib/statement-pdf.ts` (`unpdf`) numa Server Action autenticada; o limite de corpo das Server Actions é 6 MB e o PDF é limitado a 5 MB e 40 páginas. PDFs digitalizados (somente imagem) não são suportados.
 - O dashboard exibe saldo em conta e saldo investido; a página de contas também mostra o patrimônio total. `SAVINGS`/`INVESTMENT` são investimento; os demais tipos são conta.
 - A agenda financeira está em `/calendario` e `/lista`, com filtro por tipo e por dia, além das visões dedicadas `/contas-a-pagar` e `/contas-a-receber`. Ela usa `Expense.status = PENDING` + `dueDate` e `Income.status = EXPECTED` + `expectedDate`; não altera o schema nem o saldo.
 - O lembrete por e-mail está em `GET /api/cron/reminders`, agendado em `vercel.json` para 12:00 UTC. Exige `CRON_SECRET`; sem `EMAIL_SMTP_HOST` e `EMAIL_FROM` o cron não envia nada.
