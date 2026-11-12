@@ -42,6 +42,10 @@ Existem três camadas:
 
 A camada 3 é a mais importante: mesmo que alguém chame uma action diretamente, ela exige sessão e valida a propriedade do registro.
 
+### Endpoint de cron
+
+`GET /api/cron/reminders` não usa sessão de usuário; ele é protegido por `Authorization: Bearer ${CRON_SECRET}`. Se `CRON_SECRET` não estiver definido, a rota responde `401` e não executa. O retorno contém apenas contagens (usuários verificados, usuários com contas, e-mails enviados), nunca e-mails ou valores. O Vercel Cron envia esse cabeçalho automaticamente quando `CRON_SECRET` está configurado no projeto.
+
 ## Isolamento por usuário
 
 Padrões obrigatórios:
@@ -94,6 +98,8 @@ Variáveis sensíveis:
 - `DIRECT_URL` (conexão direta para migrações; `DATABASE_URL_UNPOOLED` é aceita por compatibilidade)
 - `BETTER_AUTH_SECRET`
 - `BETTER_AUTH_URL` (não é segredo, mas precisa estar correta)
+- `EMAIL_SMTP_USER`, `EMAIL_SMTP_PASS` e `EMAIL_FROM`
+- `CRON_SECRET` (protege o endpoint de lembretes)
 
 Regras:
 
@@ -123,6 +129,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 | Enumeração de e-mail | Mensagens genéricas no login | Baixo |
 | Exclusão acidental | Confirmação no cliente | Médio; sem soft delete |
 | Backup perdido | Exportação manual | Alto; não há backup automático no app |
+| Chamada indevida do cron de lembretes | `CRON_SECRET` obrigatório; resposta só com contagens | Baixo se o segredo estiver configurado |
 
 ## Boas práticas para novas features
 

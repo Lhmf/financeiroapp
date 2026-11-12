@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
-import { formString, formValues } from "@/lib/forms";
+import { formString, formValues, safeRedirectPath } from "@/lib/forms";
 import { revalidateFinance } from "@/lib/revalidate";
 import { monthKey, parseDateInput, todayUTC } from "@/lib/dates";
 import { parseBRLToCents } from "@/lib/money";
@@ -193,5 +193,10 @@ export async function markIncomeReceived(formData: FormData) {
   });
 
   revalidateFinance();
-  redirect(`/receitas?mes=${monthKey(receivedDate)}`);
+  redirect(
+    safeRedirectPath(
+      formString(formData, "redirectTo"),
+      `/receitas?mes=${monthKey(receivedDate)}`,
+    ),
+  );
 }

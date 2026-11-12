@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  addDaysUTC,
   addMonthsUTC,
   daysUntil,
   formatDate,
@@ -105,5 +106,16 @@ describe("daysUntil", () => {
       -5,
     );
     expect(daysUntil(reference, reference)).toBe(0);
+  });
+});
+
+describe("addDaysUTC", () => {
+  it("soma dias atravessando meses e anos", () => {
+    expect(
+      addDaysUTC(new Date("2026-11-30T00:00:00.000Z"), 1).toISOString(),
+    ).toBe("2026-12-01T00:00:00.000Z");
+    expect(
+      addDaysUTC(new Date("2026-12-31T00:00:00.000Z"), 1).toISOString(),
+    ).toBe("2027-01-01T00:00:00.000Z");
   });
 });

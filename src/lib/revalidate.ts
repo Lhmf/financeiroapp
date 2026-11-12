@@ -7,6 +7,10 @@ const FINANCE_PATHS = [
   "/dividas",
   "/contas",
   "/configuracoes",
+  "/calendario",
+  "/lista",
+  "/contas-a-pagar",
+  "/contas-a-receber",
 ];
 
 /** Invalida as páginas que dependem de dados financeiros. */

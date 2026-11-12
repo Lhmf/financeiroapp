@@ -165,6 +165,29 @@ Créditos entram como receitas recebidas e débitos como despesas pagas. As data
 
 Não há variável de ambiente ou dependência nova para importar. O processamento inicial é local no navegador; a gravação passa por uma Server Action autenticada, valida ownership da conta e da categoria e grava receitas/despesas em uma transação.
 
+### Lembretes por e-mail
+
+O envio é opcional e usa SMTP via `nodemailer`. Configure no `.env` (e na Vercel, se for usar em produção):
+
+```env
+EMAIL_FROM="FinanceiroApp <nao-responda@seudominio.com>"
+EMAIL_SMTP_HOST="smtp.seudominio.com"
+EMAIL_SMTP_PORT="587"
+EMAIL_SMTP_USER="usuario-smtp"
+EMAIL_SMTP_PASS="senha-ou-app-key"
+CRON_SECRET="segredo-aleatorio"
+```
+
+O arquivo `vercel.json` agenda `GET /api/cron/reminders` para todos os dias às 12:00 UTC. O endpoint procura despesas `PENDING` e receitas `EXPECTED` com data no dia seguinte, agrupa por usuário e envia um e-mail para o endereço cadastrado. Sem `EMAIL_SMTP_HOST` e `EMAIL_FROM`, a execução retorna `skipped: "smtp-not-configured"` e não envia nada. Sem `CRON_SECRET`, a rota responde `401`.
+
+Para testar manualmente:
+
+```bash
+curl -H "Authorization: Bearer $CRON_SECRET" https://financeiroapp-orcin.vercel.app/api/cron/reminders
+```
+
+O cron da Vercel chama a rota apenas em deployments de produção. O plano Hobby permite uma execução diária.
+
 ## 8. Scripts disponíveis
 
 | Script | O que faz |

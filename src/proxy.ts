@@ -3,6 +3,10 @@ import { getSessionCookie } from "better-auth/cookies";
 
 const PROTECTED_PREFIXES = [
   "/dashboard",
+  "/calendario",
+  "/lista",
+  "/contas-a-pagar",
+  "/contas-a-receber",
   "/receitas",
   "/despesas",
   "/dividas",
@@ -36,6 +40,10 @@ export function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     "/dashboard/:path*",
+    "/calendario/:path*",
+    "/lista/:path*",
+    "/contas-a-pagar/:path*",
+    "/contas-a-receber/:path*",
     "/receitas/:path*",
     "/despesas/:path*",
     "/dividas/:path*",

@@ -13,10 +13,12 @@ import { cn } from "@/lib/utils";
 export function MonthNavigator({
   month,
   basePath,
+  params,
   className,
 }: {
   month: string;
   basePath: string;
+  params?: Record<string, string | undefined>;
   className?: string;
 }) {
   const router = useRouter();
@@ -25,7 +27,12 @@ export function MonthNavigator({
   const next = monthKey(addMonthsUTC(date, 1));
 
   function goTo(value: string) {
-    router.push(`${basePath}?mes=${value}`);
+    const query = new URLSearchParams();
+    for (const [key, item] of Object.entries(params ?? {})) {
+      if (item) query.set(key, item);
+    }
+    query.set("mes", value);
+    router.push(`${basePath}?${query.toString()}`);
   }
 
   return (

@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
+  CalendarClock,
   CreditCard,
   LayoutDashboard,
   LogOut,
@@ -28,6 +29,7 @@ type NavItem = {
 
 const NAV_ITEMS: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/calendario", label: "Calendário", icon: CalendarClock },
   { href: "/receitas", label: "Receitas", icon: TrendingUp },
   { href: "/despesas", label: "Despesas", icon: TrendingDown },
   { href: "/dividas", label: "Dívidas", icon: CreditCard },
@@ -35,7 +37,17 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/configuracoes", label: "Configurações", icon: Settings },
 ];
 
-const MOBILE_ITEMS = NAV_ITEMS.slice(0, 5);
+const MOBILE_HREFS = [
+  "/dashboard",
+  "/calendario",
+  "/receitas",
+  "/despesas",
+  "/contas",
+];
+
+const MOBILE_ITEMS = MOBILE_HREFS.map((href) =>
+  NAV_ITEMS.find((item) => item.href === href),
+).filter((item): item is NavItem => Boolean(item));
 
 function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);

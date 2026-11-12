@@ -9,6 +9,8 @@ Sistema pessoal de controle financeiro multiusuário, com dashboard, receitas, d
 - Cadastro, login, logout e sessões persistidas no banco.
 - Dados isolados por usuário.
 - Dashboard com **saldo em conta**, **saldo investido**, resultado do mês, previstos, dívidas, evolução de seis meses, despesas por categoria e vencimentos.
+- Agenda financeira em `/calendario` e `/lista`, combinando contas a pagar (despesas pendentes) e a receber (receitas previstas), com filtro por tipo e por dia. As visões dedicadas ficam em `/contas-a-pagar` e `/contas-a-receber`.
+- Lembrete diário por e-mail um dia antes do vencimento, com cron protegido por `CRON_SECRET` (requer SMTP configurado).
 - Página de contas com os dois saldos, patrimônio total e indicação de contas de investimento.
 - CRUD de receitas com status **prevista/recebida**.
 - CRUD de despesas com status **pendente/paga**, tipo, forma de pagamento e parcelamento.
@@ -51,6 +53,7 @@ Contas arquivadas continuam entrando nos totais. Detalhes completos em [docs/04-
 - PostgreSQL no Neon
 - Zod 4
 - Recharts 3
+- Nodemailer (lembretes por e-mail)
 - Vitest 5 + Playwright 1.65
 - TypeScript 5
 
@@ -104,6 +107,16 @@ DIRECT_URL="postgresql://usuario:senha@host.neon.tech/neondb?sslmode=verify-full
 
 BETTER_AUTH_SECRET="segredo-aleatorio-de-32-bytes"
 BETTER_AUTH_URL="http://localhost:3000"
+
+# Opcional: lembretes por e-mail. Sem host/remetente, o cron não envia.
+EMAIL_FROM="FinanceiroApp <nao-responda@seudominio.com>"
+EMAIL_SMTP_HOST="smtp.seudominio.com"
+EMAIL_SMTP_PORT="587"
+EMAIL_SMTP_USER="usuario-smtp"
+EMAIL_SMTP_PASS="senha-ou-app-key"
+
+# Protege /api/cron/reminders.
+CRON_SECRET="segredo-aleatorio"
 ```
 
 `sslmode=verify-full` valida o certificado do servidor e evita o aviso de mudança futura do driver `pg`. Se o provedor só fornecer `sslmode=require`, a aplicação funciona, mas o aviso pode aparecer.
@@ -190,12 +203,13 @@ Implementado e verificado contra um banco Neon real (reivindicado, região `aws-
 - `npm run build` passando.
 - `npm run lint` sem erros.
 - `npx tsc --noEmit` sem erros.
-- `npm test` com **60 testes em 5 arquivos** passando.
+- `npm test` com **66 testes em 7 arquivos** passando.
 - Smoke E2E sem banco passando. O E2E com banco (`E2E_WITH_DB=1`) está bloqueado pelo login do seed demo com domínio `.local`, rejeitado pela validação atual de e-mail do Better Auth.
 - Migration `20261110161632_init` aplicada.
 - Seed demo aplicado; o usuário `demo@financeiro.local` existe, mas o login é rejeitado pela validação de e-mail (`.local` não é um domínio aceito). Para testar, crie uma conta com e-mail válido.
 - Dashboard conferido no banco de desenvolvimento em novembro de 2026: saldo em conta de **R$ 1.181,00**, saldo investido de **R$ 10.000,00**, patrimônio total de **R$ 11.181,00**, despesas pagas de **R$ 3.619,00** e resultado de **−R$ 3.619,00**. O dashboard separa os dois saldos; a página de contas mostra o patrimônio total.
 - Importação de extrato validada em Playwright com CSV de três linhas: prévia, transferência desmarcada por padrão, importação de dois lançamentos e console sem erros. A cobertura permanente do parser está em `tests/unit/statement.test.ts`.
+- Agenda financeira implementada com calendário, lista combinada, filtros por tipo/dia e páginas dedicadas de contas a pagar e a receber. O lembrete por e-mail está codificado em `/api/cron/reminders`, agendado em `vercel.json`; depende de SMTP e `CRON_SECRET` para enviar.
 - Deploy de validação na Vercel em [https://financeiroapp-orcin.vercel.app](https://financeiroapp-orcin.vercel.app), projeto `the-castilho/financeiroapp`, conectado ao GitHub. Signup, dashboard, menu mobile, logout/login e contraste do saldo foram validados; o console ficou limpo no teste automatizado.
 - Pagamento de dívida com despesa vinculada não é contado duas vezes; a despesa e o pagamento têm o mesmo valor e a conta não sofre dupla saída.
 - Isolamento comprovado por teste permanente com dois usuários: dashboard vazio e acesso direto a IDs de outro usuário resultam em “Recurso não encontrado”.
@@ -233,7 +247,7 @@ Leia [docs/05-autenticacao-e-seguranca.md](./docs/05-autenticacao-e-seguranca.md
 - Sem importação de backup.
 - Sem paginação.
 - Sem testes de integração com banco no CI.
-- Sem notificações de vencimento.
+- Lembretes por e-mail dependem de SMTP configurado; sem isso o cron não envia mensagens.
 - Sem transferências entre contas: o importador sinaliza e desmarca movimentos internos, mas importá-los cria receita/despesa.
 - A importação cobre CSV e OFX comuns; layouts bancários muito específicos podem exigir ajuste no parser.
 - Não importe o extrato da conta e a fatura do cartão ao mesmo tempo: compras do cartão e pagamento da fatura podem duplicar a saída.

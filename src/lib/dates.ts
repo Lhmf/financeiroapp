@@ -100,6 +100,11 @@ export function addMonthsUTC(date: Date, months: number): Date {
   );
 }
 
+/** Soma dias inteiros preservando o horário UTC. */
+export function addDaysUTC(date: Date, days: number): Date {
+  return new Date(date.getTime() + days * 86_400_000);
+}
+
 /** Intervalo [início, início do mês seguinte). */
 export function monthRangeUTC(date: Date): { start: Date; end: Date } {
   const start = startOfMonthUTC(date);

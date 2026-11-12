@@ -162,6 +162,14 @@
 
 **Consequência:** `SAVINGS` e `INVESTMENT` formam o saldo investido; os demais tipos formam o saldo em conta. A deduplicação usa um marcador em `notes`, então editar as observações pode reduzir a proteção. Transferências continuam sem modelo próprio: são detectadas e desmarcadas na prévia, mas, se importadas, viram receita/despesa.
 
+### D21 — Agenda financeira e lembretes por e-mail
+
+**Decisão:** criar as áreas `/calendario`, `/lista`, `/contas-a-pagar` e `/contas-a-receber` sem alterar o schema. Contas a pagar usam `Expense.status = PENDING` e `dueDate`; contas a receber usam `Income.status = EXPECTED` e `expectedDate`. O lembrete diário é um endpoint de cron protegido por `CRON_SECRET`, com envio SMTP via `nodemailer`.
+
+**Motivo:** oferecer uma visão operacional de curto prazo sem duplicar lançamentos, criar tabelas de agenda ou misturar previsto com realizado. Reutilizar os status existentes mantém os cálculos financeiros intactos.
+
+**Consequência:** a agenda é somente leitura sobre os lançamentos; pagar/receber continua usando as ações existentes. `vercel.json` agenda uma chamada diária às 12:00 UTC. Sem `EMAIL_SMTP_HOST`/`EMAIL_FROM`, o cron não envia e-mails; sem `CRON_SECRET`, a rota responde `401`. O `nodemailer` é a única dependência nova.
+
 ## Roadmap
 
 ### Fase 0 — Fundação (concluída no código)
@@ -224,7 +232,7 @@
 ### Fase 5 — Automação
 
 - [ ] Lançamentos recorrentes.
-- [ ] Alertas de vencimento.
+- [x] Alertas de vencimento por e-mail (código pronto; requer SMTP e `CRON_SECRET`).
 - [ ] Integração com Open Finance (avaliar custo/privacidade).
 - [ ] Aplicativo mobile.
 

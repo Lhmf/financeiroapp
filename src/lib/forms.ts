@@ -11,3 +11,12 @@ export function formString(formData: FormData, key: string): string {
   const value = formData.get(key);
   return typeof value === "string" ? value : "";
 }
+
+/**
+ * Aceita apenas caminhos internos como destino pós-ação.
+ * Evita open redirect ao mesmo tempo em que permite voltar para a agenda.
+ */
+export function safeRedirectPath(value: string, fallback: string): string {
+  if (!value.startsWith("/") || value.startsWith("//")) return fallback;
+  return value;
+}

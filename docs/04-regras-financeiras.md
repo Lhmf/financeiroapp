@@ -238,6 +238,17 @@ O botão **Extrato** no cabeçalho abre a importação. O arquivo é lido no nav
 - A evolução mostra os últimos seis meses até o mês selecionado.
 - A navegação mensal usa `?mes=YYYY-MM`.
 
+### Agenda financeira
+
+- **Contas a pagar** são despesas com `status = PENDING`, filtradas por `dueDate`.
+- **Contas a receber** são receitas com `status = EXPECTED`, filtradas por `expectedDate`.
+- `/calendario` mostra os dois tipos no mesmo mês. O filtro `tipo` aceita `todos`, `pagar` ou `receber`.
+- `/lista` mostra os dois tipos combinados, ordenados por data, e aceita `todos=1` para o histórico completo. `dia=1..31` limita a um dia do mês.
+- Clicar em um dia do calendário abre `/lista` já filtrado por aquele dia.
+- `/contas-a-pagar` e `/contas-a-receber` são as visões dedicadas de cada tipo.
+- Essas telas são somente leitura sobre os lançamentos existentes: não alteram saldo nem resultado. Marcar como pago/recebido continua usando as mesmas ações de despesas/receitas.
+- O lembrete por e-mail é enviado um dia antes do vencimento, por usuário, a partir de `/api/cron/reminders`. Ele lista as despesas `PENDING` e receitas `EXPECTED` do dia seguinte e usa o e-mail cadastrado no `User`. Sem SMTP configurado, nenhum e-mail é enviado.
+
 ## 8. Arredondamentos
 
 - Valores são convertidos para centavos com `Math.round`.
