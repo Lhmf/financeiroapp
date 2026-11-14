@@ -542,6 +542,33 @@ export function cleanStatementDescription(value: string): string {
   return text.slice(0, 120) || "Lançamento importado";
 }
 
+export type DuplicateStatementGroup = {
+  kind: StatementEntryKind;
+  amountCents: number;
+  entries: ParsedStatementEntry[];
+};
+
+export function findDuplicateStatementGroups(
+  entries: readonly ParsedStatementEntry[],
+): DuplicateStatementGroup[] {
+  const groups = new Map<string, ParsedStatementEntry[]>();
+  for (const entry of entries) {
+    if (entry.isTransfer) continue;
+    const key = entry.kind + "|" + String(entry.amountCents);
+    const group = groups.get(key);
+    if (group) group.push(entry);
+    else groups.set(key, [entry]);
+  }
+
+  return Array.from(groups.values())
+    .filter((group) => group.length > 1)
+    .map((group) => ({
+      kind: group[0].kind,
+      amountCents: group[0].amountCents,
+      entries: group,
+    }));
+}
+
 /**
  * Sugere uma categoria padrão pelo texto do lançamento. Se o usuário renomeou
  * a categoria, a função devolve null e a prévia permite escolher manualmente.

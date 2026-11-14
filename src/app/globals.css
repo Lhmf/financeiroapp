@@ -1,8 +1,14 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   /* "only light" também impede o modo escuro automático do navegador. */
-  color-scheme: only light;
+  color-scheme: light;
+}
+
+.dark {
+  color-scheme: dark;
 }
 
 html {

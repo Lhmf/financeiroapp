@@ -205,6 +205,7 @@ O botão **Extrato** no cabeçalho abre a importação. CSV e OFX são lidos no 
 - No PDF, valores sem sinal, marcação `D`/`C` ou palavra-chave de entrada/saída são ignorados no modo automático; a prévia avisa e o usuário pode escolher “Valores positivos são entradas” ou “saídas”.
 - Aplicações/resgates, faturas/cartão, saques/depósitos e transferências entre contas próprias são sinalizados e **desmarcados por padrão**.
 - Reimportações usam um marcador em `notes` para ignorar linhas já importadas.
+- Lançamentos repetidos dentro do mesmo arquivo (mesmo tipo e valor) são agrupados. A prévia abre a pergunta “Deseja importar as repetições?” e o botão de importar fica bloqueado até a confirmação do usuário, evitando despesas ou receitas duplicadas sem decisão consciente.
 
 **Leitura de PDF:** o parser procura uma data no início da linha, acumula a descrição (inclusive em várias linhas) e usa o primeiro valor monetário encontrado depois dela. Quando o PDF traz saldo na mesma linha, o saldo é ignorado. A ordem e o formato das colunas variam entre bancos; se um layout específico não for reconhecido, exporte o mesmo extrato em CSV.
 

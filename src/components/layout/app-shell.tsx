@@ -17,6 +17,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { StatementImportButton } from "@/components/imports/statement-import-button";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import type { AccountType, CategoryType } from "@/generated/prisma/enums";
@@ -63,10 +64,10 @@ function Brand() {
         <Wallet className="h-5 w-5" />
       </span>
       <span className="leading-tight">
-        <span className="block text-sm font-semibold tracking-tight text-slate-900">
+        <span className="block text-sm font-semibold tracking-tight text-slate-900 dark:text-slate-100">
           FinanceiroApp
         </span>
-        <span className="block text-[10px] font-medium uppercase tracking-[0.14em] text-slate-600">
+        <span className="block text-[10px] font-medium uppercase tracking-[0.14em] text-slate-600 dark:text-slate-400">
           Finanças pessoais
         </span>
       </span>
@@ -99,8 +100,8 @@ function NavLinks({
             className={cn(
               "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
               active
-                ? "bg-emerald-50 text-emerald-700"
-                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900",
+                ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
+                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100",
             )}
           >
             <Icon
@@ -139,16 +140,18 @@ function UserCard({
     .join("");
 
   return (
-    <div className="border-t border-slate-100 p-3">
+    <div className="border-t border-slate-100 p-3 dark:border-slate-800">
       <div className="flex items-center gap-2.5 rounded-xl p-2">
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-900 bg-gradient-to-br from-slate-900 to-slate-700 text-xs font-semibold text-white">
           {initials || "U"}
         </span>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-xs font-semibold text-slate-800">
+          <p className="truncate text-xs font-semibold text-slate-800 dark:text-slate-200">
             {user.name}
           </p>
-          <p className="truncate text-[11px] text-slate-600">{user.email}</p>
+          <p className="truncate text-[11px] text-slate-600 dark:text-slate-400">
+            {user.email}
+          </p>
         </div>
         <button
           type="button"
@@ -156,7 +159,7 @@ function UserCard({
           disabled={signingOut}
           title="Sair"
           aria-label="Sair"
-          className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 transition hover:bg-rose-50 hover:text-rose-600 disabled:opacity-50"
+          className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 transition hover:bg-rose-50 hover:text-rose-600 dark:text-slate-400 dark:hover:bg-rose-950/40 dark:hover:text-rose-300 disabled:opacity-50"
         >
           <LogOut className="h-4 w-4" />
         </button>
@@ -194,8 +197,8 @@ export function AppShell({
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-slate-200 bg-white lg:flex">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 lg:flex">
         <Brand />
         <NavLinks pathname={pathname} />
         <UserCard
@@ -216,14 +219,14 @@ export function AppShell({
           <aside
             id="mobile-menu"
             aria-label="Menu de navegação"
-            className="animate-drawer-in fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-slate-200 bg-white shadow-2xl lg:hidden"
+            className="animate-drawer-in fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-slate-200 bg-white shadow-2xl lg:hidden dark:border-slate-800 dark:bg-slate-900"
           >
-            <div className="flex items-center justify-between border-b border-slate-100 pr-3">
+            <div className="flex items-center justify-between border-b border-slate-100 pr-3 dark:border-slate-800">
               <Brand />
               <button
                 type="button"
                 aria-label="Fechar menu"
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
                 onClick={() => setMobileOpen(false)}
               >
                 <X className="h-4 w-4" />
@@ -243,22 +246,22 @@ export function AppShell({
       ) : null}
 
       <div className="lg:pl-64">
-        <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-slate-200/80 bg-white/85 px-4 backdrop-blur sm:px-6 lg:px-8">
+        <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-slate-200/80 bg-white/85 px-4 backdrop-blur sm:px-6 lg:px-8 dark:border-slate-800 dark:bg-slate-900/85">
           <button
             type="button"
             aria-label="Abrir menu"
             aria-controls={mobileOpen ? "mobile-menu" : undefined}
             aria-expanded={mobileOpen}
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 lg:hidden"
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 dark:hover:bg-slate-800 dark:text-slate-400 lg:hidden"
             onClick={() => setMobileOpen(true)}
           >
             <Menu className="h-5 w-5" />
           </button>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold text-slate-900">
+            <p className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">
               {current.label}
             </p>
-            <p className="hidden text-[11px] text-slate-600 sm:block">
+            <p className="hidden text-[11px] text-slate-600 sm:block dark:text-slate-400">
               Controle financeiro pessoal
             </p>
           </div>
@@ -267,6 +270,7 @@ export function AppShell({
             categories={categories}
             defaultMonth={defaultMonth}
           />
+          <ThemeToggle />
           <Link
             href="/configuracoes"
             className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 bg-gradient-to-br from-slate-900 to-slate-700 text-xs font-semibold text-white ring-2 ring-white transition hover:from-slate-800 hover:to-slate-600"
@@ -287,7 +291,7 @@ export function AppShell({
 
       <nav
         aria-label="Navegação móvel"
-        className="fixed inset-x-0 bottom-0 z-30 border-t border-slate-200 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-30 border-t border-slate-200 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden dark:border-slate-800 dark:bg-slate-900/95"
       >
         <div className="mx-auto grid max-w-md grid-cols-5">
           {MOBILE_ITEMS.map((item) => {
@@ -301,14 +305,16 @@ export function AppShell({
                 className={cn(
                   "flex flex-col items-center gap-0.5 pb-1.5 pt-1 text-[10px] font-medium transition-colors",
                   active
-                    ? "text-emerald-700"
-                    : "text-slate-600 hover:text-slate-800",
+                    ? "text-emerald-700 dark:text-emerald-300"
+                    : "text-slate-600 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100",
                 )}
               >
                 <span
                   className={cn(
                     "flex h-8 w-12 items-center justify-center rounded-xl transition-colors",
-                    active ? "bg-emerald-50 text-emerald-700" : "text-slate-600",
+                    active
+                      ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
+                      : "text-slate-600 dark:text-slate-400",
                   )}
                 >
                   <Icon className="h-5 w-5" />

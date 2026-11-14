@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   decodeStatementBuffer,
+  findDuplicateStatementGroups,
   isTransferDescription,
   parseStatementAmount,
   parseStatementDate,
@@ -539,5 +540,81 @@ describe("decodeStatementBuffer", () => {
   it("cai para Windows-1252 quando o UTF-8 é inválido", () => {
     const windows1252 = new Uint8Array([0x63, 0x61, 0x66, 0xe9]);
     expect(decodeStatementBuffer(windows1252.buffer)).toBe("café");
+  });
+});
+
+describe("findDuplicateStatementGroups", () => {
+  it("agrupa lançamentos repetidos pelo tipo e valor", () => {
+    const result = findDuplicateStatementGroups([
+      {
+        sourceIndex: 0,
+        date: "2026-11-10",
+        description: "Aluguel",
+        amountCents: 50_000,
+        kind: "expense",
+        isTransfer: false,
+      },
+      {
+        sourceIndex: 1,
+        date: "2026-11-10",
+        description: "Aluguel",
+        amountCents: 50_000,
+        kind: "expense",
+        isTransfer: false,
+      },
+    ]);
+
+    expect(result).toHaveLength(1);
+    expect(result[0]).toMatchObject({
+      kind: "expense",
+      amountCents: 50_000,
+    });
+    expect(result[0]?.entries).toHaveLength(2);
+  });
+
+  it("ignora transferências ao agrupar valores repetidos", () => {
+    const result = findDuplicateStatementGroups([
+      {
+        sourceIndex: 0,
+        date: "2026-11-10",
+        description: "Aplicação RDB",
+        amountCents: 100_000,
+        kind: "expense",
+        isTransfer: true,
+      },
+      {
+        sourceIndex: 1,
+        date: "2026-11-10",
+        description: "Aplicação RDB",
+        amountCents: 100_000,
+        kind: "expense",
+        isTransfer: true,
+      },
+    ]);
+
+    expect(result).toHaveLength(0);
+  });
+
+  it("não agrupa valores iguais de tipos diferentes", () => {
+    const result = findDuplicateStatementGroups([
+      {
+        sourceIndex: 0,
+        date: "2026-11-10",
+        description: "Depósito",
+        amountCents: 100_000,
+        kind: "income",
+        isTransfer: false,
+      },
+      {
+        sourceIndex: 1,
+        date: "2026-11-10",
+        description: "Compra",
+        amountCents: 100_000,
+        kind: "expense",
+        isTransfer: false,
+      },
+    ]);
+
+    expect(result).toHaveLength(0);
   });
 });

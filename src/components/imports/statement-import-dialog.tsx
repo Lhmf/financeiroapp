@@ -30,6 +30,7 @@ import {
 import { formatCents } from "@/lib/money";
 import {
   decodeStatementBuffer,
+  findDuplicateStatementGroups,
   MAX_STATEMENT_FILE_BYTES,
   parseStatementFile,
   suggestCategoryId,
@@ -75,7 +76,11 @@ type SummaryTileProps = {
   tone: "income" | "expense" | "neutral";
 };
 
-function SummaryTile({ label, value, tone }: SummaryTileProps) {
+const SummaryTile = React.memo(function SummaryTile({
+  label,
+  value,
+  tone,
+}: SummaryTileProps) {
   const tones = {
     income: "border-emerald-200 bg-emerald-50 text-emerald-700",
     expense: "border-rose-200 bg-rose-50 text-rose-700",
@@ -90,7 +95,7 @@ function SummaryTile({ label, value, tone }: SummaryTileProps) {
       <p className="tabular mt-0.5 text-sm font-semibold">{value}</p>
     </div>
   );
-}
+});
 
 export function StatementImportDialog({
   accounts,
@@ -125,6 +130,10 @@ export function StatementImportDialog({
   const [warnings, setWarnings] = React.useState<string[]>([]);
   const [error, setError] = React.useState("");
   const [reading, setReading] = React.useState(false);
+  const [duplicateQuestion, setDuplicateQuestion] = React.useState<string | null>(
+    null,
+  );
+  const [duplicateAllowed, setDuplicateAllowed] = React.useState(true);
   const [importing, setImporting] = React.useState(false);
   const [dragging, setDragging] = React.useState(false);
   const [visibleCount, setVisibleCount] = React.useState(
@@ -205,7 +214,8 @@ export function StatementImportDialog({
     parseMonthKey(month) !== null &&
     selectedEntries.length > 0 &&
     !reading &&
-    !importing;
+    !importing &&
+    (duplicateQuestion ? duplicateAllowed : true);
 
   const analyze = React.useCallback(
     (
@@ -241,6 +251,19 @@ export function StatementImportDialog({
 
       setEntries(drafts);
       setVisibleCount(INITIAL_VISIBLE_ENTRIES);
+
+      const duplicateGroupsList = findDuplicateStatementGroups(parsed.entries);
+
+      if (duplicateGroupsList.length > 0) {
+        const amountCents = duplicateGroupsList[0].amountCents;
+        setDuplicateQuestion(
+          `${duplicateGroupsList.length} ${duplicateGroupsList.length === 1 ? "valor repetido foi" : "valores repetidos foram"} detectado(s) no arquivo com o mesmo valor de lançamento (${formatCents(amountCents)}). Deseja importar as repetições?`,
+        );
+        setDuplicateAllowed(false);
+      } else {
+        setDuplicateQuestion(null);
+        setDuplicateAllowed(true);
+      }
     },
     [categories],
   );
@@ -642,6 +665,22 @@ export function StatementImportDialog({
                   {warnings.length > 1
                     ? ` (+${warnings.length - 1} ${warnings.length - 1 === 1 ? "aviso" : "avisos"})`
                     : ""}
+                </Alert>
+              ) : null}
+
+              {duplicateQuestion ? (
+                <Alert tone="info">
+                  <div className="space-y-2">
+                    <p className="text-slate-900">{duplicateQuestion}</p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setDuplicateAllowed(true)}
+                    >
+                      Sim, importar repetidas
+                    </Button>
+                  </div>
                 </Alert>
               ) : null}
 
