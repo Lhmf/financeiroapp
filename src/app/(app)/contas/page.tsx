@@ -214,7 +214,7 @@ export default async function AccountsPage({
                     </span>
                   </div>
 
-                  <div className="flex flex-wrap items-center justify-end gap-1.5 border-t border-slate-100 pt-3">
+                  <div className="flex flex-wrap items-center justify-end gap-1.5 border-t border-slate-100 pt-3 dark:border-slate-800">
                     <Link
                       href={`/contas/${account.id}/editar`}
                       className="inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-800"

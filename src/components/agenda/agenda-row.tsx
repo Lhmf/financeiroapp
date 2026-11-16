@@ -22,7 +22,7 @@ export function AgendaRow({
   const action = isExpense ? markExpensePaid : markIncomeReceived;
 
   return (
-    <li className="flex flex-col gap-3 px-5 py-4 transition-colors hover:bg-slate-50/70 sm:flex-row sm:items-center">
+    <li className="flex flex-col gap-3 px-5 py-4 transition-colors hover:bg-slate-50/70 sm:flex-row sm:items-center dark:hover:bg-slate-800/50">
       <div className="flex min-w-0 flex-1 items-start gap-3">
         <span
           className={
@@ -40,14 +40,14 @@ export function AgendaRow({
 
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <p className="truncate text-sm font-medium text-slate-800">
+            <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-100">
               {item.description}
             </p>
             <Badge tone={isExpense ? "red" : "green"}>
               {isExpense ? "A pagar" : "A receber"}
             </Badge>
           </div>
-          <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-slate-600">
+          <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-slate-600 dark:text-slate-400">
             {item.categoryName ? (
               <span className="inline-flex items-center gap-1">
                 <Dot color={item.categoryColor ?? "#64748b"} />
@@ -108,7 +108,7 @@ export function AgendaRow({
 
           <Link
             href={editHref}
-            className="inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-800"
+            className="inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-800 dark:text-slate-300 dark:hover:bg-slate-700/60 dark:hover:text-slate-100"
           >
             <Pencil className="h-3.5 w-3.5" />
             Editar

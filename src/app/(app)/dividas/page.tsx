@@ -154,7 +154,7 @@ export default async function DebtsPage() {
                       <span>Inicial: {formatCents(debt.initialAmountCents)}</span>
                     </div>
 
-                    <div className="mt-4 flex items-center justify-end gap-2 border-t border-slate-100 pt-3">
+                    <div className="mt-4 flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-slate-800">
                       <Link
                         href={`/dividas/${debt.id}/editar`}
                         className="inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-800"

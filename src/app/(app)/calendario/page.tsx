@@ -224,7 +224,7 @@ export default async function CalendarioPage({
             })}
           </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-3 text-[11px] text-slate-600">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-3 text-[11px] text-slate-600 dark:border-slate-800 dark:text-slate-400">
             <span className="inline-flex flex-wrap items-center gap-3">
               <span className="inline-flex items-center gap-1">
                 <span className="h-2 w-2 rounded-full bg-rose-500" />

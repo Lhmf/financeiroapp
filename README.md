@@ -17,7 +17,7 @@ Sistema pessoal de controle financeiro multiusuário, com dashboard, receitas, d
 - CRUD de dívidas com pagamentos parciais, saldo devedor, progresso e quitação.
 - CRUD de contas com saldo inicial, saldo calculado e arquivamento. Poupança e investimento compõem o saldo investido; os demais tipos compõem o saldo em conta.
 - Importação de extrato CSV/OFX/PDF pelo cabeçalho, com prévia, sugestão de categoria, seleção de lançamentos e proteção contra reimportação.
-- PWA com manifest, service worker e instalação no celular.
+- PWA com manifest, service worker, prompt de instalação (`beforeinstallprompt`) e ícones.
 - Modo escuro com alternância manual e persistência no navegador.
 - Categorias padrão por usuário e gestão de categorias.
 - Exportação dos dados em JSON.

@@ -125,7 +125,7 @@ export function AccountForm({
         ) : null}
       </div>
 
-      <div className="flex flex-wrap items-center justify-end gap-2 border-t border-slate-100 pt-4">
+      <div className="flex flex-wrap items-center justify-end gap-2 border-t border-slate-100 pt-4 dark:border-slate-800">
         <LinkButton href={cancelHref} variant="outline">
           Cancelar
         </LinkButton>

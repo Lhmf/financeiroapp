@@ -31,11 +31,11 @@ function MetricCard({
   variant?: "default" | "primary";
 }) {
   const tones = {
-    slate: "bg-slate-100 text-slate-600",
-    emerald: "bg-emerald-50 text-emerald-700",
-    rose: "bg-rose-50 text-rose-600",
-    amber: "bg-amber-50 text-amber-600",
-    violet: "bg-violet-50 text-violet-600",
+    slate: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300",
+    emerald: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300",
+    rose: "bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400",
+    amber: "bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400",
+    violet: "bg-violet-50 text-violet-600 dark:bg-violet-950/40 dark:text-violet-400",
   } as const;
   const primary = variant === "primary";
 
@@ -59,7 +59,7 @@ function MetricCard({
           <p
             className={cn(
               "text-xs font-medium",
-              primary ? "text-emerald-50" : "text-slate-600",
+              primary ? "text-emerald-50" : "text-slate-600 dark:text-slate-400",
             )}
           >
             {label}
@@ -67,7 +67,7 @@ function MetricCard({
           <p
             className={cn(
               "tabular mt-2 text-2xl font-semibold tracking-tight xl:text-xl 2xl:text-2xl",
-              primary ? "text-white" : "text-slate-900",
+              primary ? "text-white" : "text-slate-900 dark:text-slate-100",
               valueClassName,
             )}
           >
@@ -76,7 +76,7 @@ function MetricCard({
           <p
             className={cn(
               "mt-1 text-[11px]",
-              primary ? "text-emerald-50" : "text-slate-600",
+              primary ? "text-emerald-50" : "text-slate-600 dark:text-slate-400",
             )}
           >
             {hint}

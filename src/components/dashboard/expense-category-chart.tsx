@@ -58,10 +58,10 @@ export function ExpenseCategoryChart({
           </PieChart>
         </ResponsiveContainer>
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-[10px] font-medium uppercase tracking-wide text-slate-600">
+          <span className="text-[10px] font-medium uppercase tracking-wide text-slate-600 dark:text-slate-400">
             Total pago
           </span>
-          <span className="tabular text-base font-semibold text-slate-900">
+          <span className="tabular text-base font-semibold text-slate-900 dark:text-slate-100">
             {formatCents(total)}
           </span>
         </div>
@@ -75,11 +75,11 @@ export function ExpenseCategoryChart({
               className="h-2 w-2 shrink-0 rounded-full"
               style={{ backgroundColor: item.color }}
             />
-            <span className="min-w-0 flex-1 truncate text-xs text-slate-600">
+            <span className="min-w-0 flex-1 truncate text-xs text-slate-600 dark:text-slate-300">
               {item.name}
             </span>
-            <span className="text-[11px] text-slate-600">{item.percent}%</span>
-            <span className="tabular min-w-[74px] text-right text-xs font-medium text-slate-700">
+            <span className="text-[11px] text-slate-600 dark:text-slate-400">{item.percent}%</span>
+            <span className="tabular min-w-[74px] text-right text-xs font-medium text-slate-700 dark:text-slate-300">
               {formatCents(item.amountCents)}
             </span>
           </div>

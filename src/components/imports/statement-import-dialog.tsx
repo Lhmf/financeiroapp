@@ -84,7 +84,7 @@ const SummaryTile = React.memo(function SummaryTile({
   const tones = {
     income: "border-emerald-200 bg-emerald-50 text-emerald-700",
     expense: "border-rose-200 bg-rose-50 text-rose-700",
-    neutral: "border-slate-200 bg-white text-slate-900",
+    neutral: "border-slate-200 bg-white text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100",
   } as const;
 
   return (
@@ -453,9 +453,9 @@ export function StatementImportDialog({
         aria-modal="true"
         aria-labelledby={titleId}
         aria-describedby={descriptionId}
-        className="flex max-h-[95dvh] w-full max-w-3xl flex-col overflow-hidden rounded-t-2xl border border-slate-200 bg-white shadow-2xl sm:max-h-[90vh] sm:rounded-2xl"
+        className="flex max-h-[95dvh] w-full max-w-3xl flex-col overflow-hidden rounded-t-2xl border border-slate-200 bg-white shadow-2xl sm:max-h-[90vh] sm:rounded-2xl dark:border-slate-700 dark:bg-slate-900"
       >
-        <header className="flex items-start justify-between gap-3 border-b border-slate-100 px-5 py-4">
+        <header className="flex items-start justify-between gap-3 border-b border-slate-100 px-5 py-4 dark:border-slate-800">
           <div className="flex min-w-0 items-start gap-3">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
               <FileUp className="h-5 w-5" />
@@ -463,13 +463,13 @@ export function StatementImportDialog({
             <div className="min-w-0">
               <h2
                 id={titleId}
-                className="text-sm font-semibold text-slate-900"
+                className="text-sm font-semibold text-slate-900 dark:text-slate-100"
               >
                 Importar extrato
               </h2>
               <p
                 id={descriptionId}
-                className="mt-0.5 text-[11px] leading-relaxed text-slate-600"
+                className="mt-0.5 text-[11px] leading-relaxed text-slate-600 dark:text-slate-400"
               >
                 CSV, OFX ou PDF com texto selecionável. O app identifica entradas,
                 saídas e sugere categorias antes de lançar.
@@ -482,7 +482,7 @@ export function StatementImportDialog({
             aria-label="Fechar importação"
             onClick={requestClose}
             disabled={importing}
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-800 disabled:opacity-50"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-800 disabled:opacity-50 dark:text-slate-400 dark:hover:bg-slate-700/60 dark:hover:text-slate-100"
           >
             <X className="h-4 w-4" />
           </button>
@@ -589,7 +589,7 @@ export function StatementImportDialog({
 
               <div className="grid gap-3 sm:grid-cols-[1fr_230px]">
                 <div>
-                  <span className="mb-1.5 block text-xs font-medium text-slate-700">
+                  <span className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">
                     Arquivo do extrato
                   </span>
                   <label
@@ -671,7 +671,7 @@ export function StatementImportDialog({
               {duplicateQuestion ? (
                 <Alert tone="info">
                   <div className="space-y-2">
-                    <p className="text-slate-900">{duplicateQuestion}</p>
+                    <p className="text-slate-900 dark:text-slate-100">{duplicateQuestion}</p>
                     <Button
                       type="button"
                       variant="outline"
@@ -688,10 +688,10 @@ export function StatementImportDialog({
                 <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50/40 p-3">
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div>
-                      <p className="text-xs font-semibold text-slate-900">
+                      <p className="text-xs font-semibold text-slate-900 dark:text-slate-100">
                         Prévia do extrato
                       </p>
-                      <p className="text-[11px] text-slate-600">
+                      <p className="text-[11px] text-slate-600 dark:text-slate-400">
                         Confira as entradas, as saídas e as categorias antes de
                         importar.
                       </p>
@@ -761,7 +761,7 @@ export function StatementImportDialog({
                   </div>
 
                   {transferCount > 0 || selectedOutsideMonth > 0 ? (
-                    <p className="text-[11px] leading-relaxed text-slate-600">
+                    <p className="text-[11px] leading-relaxed text-slate-600 dark:text-slate-400">
                       {transferCount > 0
                         ? "Transferências, aplicações e pagamentos de fatura vêm desmarcados para evitar dupla contagem. "
                         : ""}
@@ -784,8 +784,8 @@ export function StatementImportDialog({
                           className={cn(
                             "flex items-start gap-3 rounded-xl border p-3 transition",
                             entry.selected
-                              ? "border-slate-200 bg-white"
-                              : "border-slate-100 bg-slate-50/70 opacity-80",
+                              ? "border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800"
+                              : "border-slate-100 bg-slate-50/70 opacity-80 dark:border-slate-800 dark:bg-slate-900/60",
                           )}
                         >
                           <input
@@ -803,7 +803,7 @@ export function StatementImportDialog({
 
                           <div className="min-w-0 flex-1 space-y-1.5">
                             <div className="flex flex-wrap items-center gap-1.5">
-                              <span className="text-[11px] font-medium text-slate-600">
+                              <span className="text-[11px] font-medium text-slate-600 dark:text-slate-300">
                                 {formatDate(entry.date)}
                               </span>
                               {entry.isTransfer ? (
@@ -814,7 +814,7 @@ export function StatementImportDialog({
                               ) : null}
                             </div>
 
-                            <p className="truncate text-sm font-medium text-slate-900">
+                            <p className="truncate text-sm font-medium text-slate-900 dark:text-slate-100">
                               {entry.description}
                             </p>
 
@@ -872,7 +872,7 @@ export function StatementImportDialog({
                   ) : null}
                 </div>
               ) : warnings.length === 0 && !error ? (
-                <p className="rounded-xl border border-dashed border-slate-200 bg-slate-50/60 px-4 py-6 text-center text-xs text-slate-500">
+                <p className="rounded-xl border border-dashed border-slate-200 bg-slate-50/60 px-4 py-6 text-center text-xs text-slate-500 dark:border-slate-800 dark:bg-slate-900/50">
                   Selecione um arquivo para ver a análise automática.
                 </p>
               ) : null}
@@ -880,7 +880,7 @@ export function StatementImportDialog({
           )}
         </div>
 
-        <footer className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 bg-slate-50/60 px-5 py-3">
+        <footer className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 bg-slate-50/60 px-5 py-3 dark:border-slate-800 dark:bg-slate-900/60">
           <p className="text-[10px] leading-relaxed text-slate-500">
             Importado como realizado: receitas recebidas e despesas pagas.
           </p>

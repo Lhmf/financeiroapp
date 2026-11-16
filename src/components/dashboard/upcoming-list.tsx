@@ -28,8 +28,8 @@ function DateBadge({ dateISO }: { dateISO: string }) {
     .replace(".", "");
 
   return (
-    <span className="flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-xl bg-slate-50 text-slate-600 ring-1 ring-slate-200">
-      <span className="text-[13px] font-semibold leading-none text-slate-800">
+    <span className="flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-xl bg-slate-50 text-slate-600 ring-1 ring-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:ring-slate-700">
+      <span className="text-[13px] font-semibold leading-none text-slate-800 dark:text-slate-100">
         {day}
       </span>
       <span className="mt-0.5 text-[10px] font-medium uppercase leading-none">
@@ -77,8 +77,8 @@ export function UpcomingList({
     <div>
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
-          <h3 className="text-sm font-semibold text-slate-900">{title}</h3>
-          <p className="mt-0.5 text-xs text-slate-600">{description}</p>
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{title}</h3>
+          <p className="mt-0.5 text-xs text-slate-600 dark:text-slate-400">{description}</p>
         </div>
         <Link
           href={hrefBase}
@@ -95,7 +95,7 @@ export function UpcomingList({
           className="border-0 bg-transparent py-8"
         />
       ) : (
-        <ul className="divide-y divide-slate-100">
+        <ul className="divide-y divide-slate-100 dark:divide-slate-800">
           {items.map((item) => {
             const due = dueLabel(item.days, kind);
             return (
@@ -106,10 +106,10 @@ export function UpcomingList({
                 >
                   <DateBadge dateISO={item.dateISO} />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-xs font-medium text-slate-800">
+                    <p className="truncate text-xs font-medium text-slate-800 dark:text-slate-100">
                       {item.description}
                     </p>
-                    <div className="mt-0.5 flex items-center gap-1.5 text-[11px] text-slate-600">
+                    <div className="mt-0.5 flex items-center gap-1.5 text-[11px] text-slate-600 dark:text-slate-400">
                       <Dot color={item.categoryColor} />
                       <span className="truncate">{item.categoryName}</span>
                       <span>·</span>

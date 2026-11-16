@@ -38,7 +38,7 @@ export function MonthNavigator({
   return (
     <div
       className={cn(
-        "inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white p-1 shadow-sm",
+        "inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white p-1 shadow-sm dark:border-slate-700 dark:bg-slate-800",
         className,
       )}
     >
@@ -46,18 +46,18 @@ export function MonthNavigator({
         type="button"
         aria-label="Mês anterior"
         onClick={() => goTo(previous)}
-        className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500"
+        className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500 dark:text-slate-400 dark:hover:bg-slate-700/60 dark:hover:text-slate-100"
       >
         <ChevronLeft className="h-4 w-4" />
       </button>
-      <span className="min-w-[144px] text-center text-xs font-semibold text-slate-700">
+      <span className="min-w-[144px] text-center text-xs font-semibold text-slate-700 dark:text-slate-200">
         {monthLabelTitle(date)}
       </span>
       <button
         type="button"
         aria-label="Próximo mês"
         onClick={() => goTo(next)}
-        className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500"
+        className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500 dark:text-slate-400 dark:hover:bg-slate-700/60 dark:hover:text-slate-100"
       >
         <ChevronRight className="h-4 w-4" />
       </button>

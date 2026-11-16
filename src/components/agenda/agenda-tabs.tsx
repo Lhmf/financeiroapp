@@ -23,7 +23,7 @@ export function AgendaTabs({
     <div
       role="navigation"
       aria-label="Áreas da agenda financeira"
-      className="flex flex-wrap gap-1 rounded-xl border border-slate-200 bg-white p-1 shadow-sm"
+      className="flex flex-wrap gap-1 rounded-xl border border-slate-200 bg-white p-1 shadow-sm dark:border-slate-700 dark:bg-slate-800"
     >
       {TABS.map((tab) => {
         const isActive = tab.key === active;
@@ -37,7 +37,7 @@ export function AgendaTabs({
               "inline-flex h-8 items-center rounded-lg px-3 text-xs font-medium transition-colors",
               isActive
                 ? "bg-emerald-700 text-white shadow-sm"
-                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900",
+                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700/60 dark:hover:text-slate-100",
             )}
           >
             {tab.label}

@@ -27,7 +27,7 @@ export function EvolutionChart({
 
   return (
     <div>
-      <div className="mb-3 flex flex-wrap items-center gap-4 text-[11px] font-medium text-slate-600">
+      <div className="mb-3 flex flex-wrap items-center gap-4 text-[11px] font-medium text-slate-600 dark:text-slate-400">
         <span className="inline-flex items-center gap-1.5">
           <span aria-hidden className="h-2 w-2 rounded-full bg-emerald-500" />
           Receitas
@@ -36,7 +36,7 @@ export function EvolutionChart({
           <span aria-hidden className="h-2 w-2 rounded-full bg-rose-500" />
           Despesas
         </span>
-        <span className="ml-auto hidden text-[10px] font-normal text-slate-600 sm:inline">
+        <span className="ml-auto hidden text-[10px] font-normal text-slate-600 dark:text-slate-400 sm:inline">
           Valores realizados
         </span>
       </div>
@@ -118,12 +118,12 @@ export function EvolutionChart({
           </ResponsiveContainer>
         </div>
       ) : (
-        <div className="flex h-[260px] items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50/50 px-6 text-center">
+        <div className="flex h-[260px] items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50/50 px-6 text-center dark:border-slate-800 dark:bg-slate-900/50">
           <div>
-            <p className="text-sm font-medium text-slate-700">
+            <p className="text-sm font-medium text-slate-700 dark:text-slate-200">
               Ainda não há movimentações
             </p>
-            <p className="mt-1 text-xs text-slate-600">
+            <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
               Receitas recebidas e despesas pagas aparecem aqui.
             </p>
           </div>

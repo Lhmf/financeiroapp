@@ -28,7 +28,7 @@ export function AgendaKindFilter({
     <div
       role="group"
       aria-label="Filtrar por tipo"
-      className="inline-flex flex-wrap gap-1 rounded-xl border border-slate-200 bg-white p-1 shadow-sm"
+      className="inline-flex flex-wrap gap-1 rounded-xl border border-slate-200 bg-white p-1 shadow-sm dark:border-slate-700 dark:bg-slate-800"
     >
       {AGENDA_KINDS.map((option) => {
         const isActive = option.value === kind;
@@ -41,8 +41,8 @@ export function AgendaKindFilter({
             className={cn(
               "inline-flex h-8 items-center rounded-lg px-3 text-xs font-medium transition-colors",
               isActive
-                ? "bg-slate-900 text-white shadow-sm"
-                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900",
+                ? "bg-slate-900 text-white shadow-sm dark:bg-emerald-600 dark:text-white"
+                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700/60 dark:hover:text-slate-100",
             )}
           >
             {option.label}

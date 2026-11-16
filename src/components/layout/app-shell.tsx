@@ -16,6 +16,7 @@ import {
   X,
   type LucideIcon,
 } from "lucide-react";
+import { InstallPrompt } from "@/components/pwa/install-prompt";
 import { StatementImportButton } from "@/components/imports/statement-import-button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { authClient } from "@/lib/auth-client";
@@ -270,6 +271,7 @@ export function AppShell({
             categories={categories}
             defaultMonth={defaultMonth}
           />
+          <InstallPrompt />
           <ThemeToggle />
           <Link
             href="/configuracoes"
