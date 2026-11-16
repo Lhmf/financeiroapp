@@ -1,9 +1,8 @@
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { BarChart3 } from "lucide-react";
 import { MonthNavigator } from "@/components/filters/month-navigator";
 import { SummaryCards } from "@/components/dashboard/summary-cards";
-import { EvolutionChart } from "@/components/dashboard/evolution-chart";
-import { ExpenseCategoryChart } from "@/components/dashboard/expense-category-chart";
 import { UpcomingList } from "@/components/dashboard/upcoming-list";
 import { DebtSummary } from "@/components/dashboard/debt-summary";
 import { AccountsSummary } from "@/components/dashboard/accounts-summary";
@@ -11,6 +10,32 @@ import { Alert } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireUser } from "@/lib/session";
 import { getDashboardData } from "@/services/dashboard";
+
+const EvolutionChart = dynamic(
+  () =>
+    import("@/components/dashboard/evolution-chart").then(
+      (mod) => mod.EvolutionChart,
+    ),
+  { loading: () => <ChartFallback /> },
+);
+
+const ExpenseCategoryChart = dynamic(
+  () =>
+    import("@/components/dashboard/expense-category-chart").then(
+      (mod) => mod.ExpenseCategoryChart,
+    ),
+  { loading: () => <ChartFallback /> },
+);
+
+function ChartFallback() {
+  return (
+    <div className="flex h-[260px] items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50/50 px-6 text-center dark:border-slate-800 dark:bg-slate-900/50">
+      <p className="text-sm font-medium text-slate-700 dark:text-slate-200">
+        Carregando gráfico…
+      </p>
+    </div>
+  );
+}
 
 export const metadata = {
   title: "Dashboard",
